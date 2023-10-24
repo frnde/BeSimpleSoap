@@ -27,7 +27,7 @@ class TypeRepository
 
     protected $classmap;
 
-    public function __construct(ClassMap $classmap = null)
+    public function __construct(ClassMap $classmap =null)
     {
         $this->classmap = $classmap;
     }

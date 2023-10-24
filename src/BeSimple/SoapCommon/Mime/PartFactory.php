@@ -8,20 +8,20 @@ class PartFactory
 {
     public static function createFromSoapAttachment(SoapAttachment $attachment)
     {
-        return new Part(
+        return new AbstractPart(
             $attachment->getContent(),
-            Part::CONTENT_TYPE_PDF,
-            Part::CHARSET_UTF8,
-            Part::ENCODING_BINARY,
+            AbstractPart::CONTENT_TYPE_PDF,
+            AbstractPart::CHARSET_UTF8,
+            AbstractPart::ENCODING_BINARY,
             $attachment->getId()
         );
     }
 
     /**
      * @param SoapAttachment[] $attachments SOAP attachments
-     * @return Part[]
+     * @return AbstractPart[]
      */
-    public static function createAttachmentParts(array $attachments = [])
+    public static function createAttachmentParts(array $attachments =[])
     {
         $parts = [];
         foreach ($attachments as $attachment) {

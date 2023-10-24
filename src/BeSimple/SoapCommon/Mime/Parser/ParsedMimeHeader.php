@@ -13,7 +13,7 @@ class ParsedMimeHeader
      * @param string $value
      * @param string|null $subValue
      */
-    public function __construct($name, $value, $subValue = null)
+    public function __construct($name, $value, $subValue =null)
     {
         $this->name = $name;
         $this->value = $value;

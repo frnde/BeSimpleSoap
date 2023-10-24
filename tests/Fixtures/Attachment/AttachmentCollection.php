@@ -9,7 +9,7 @@ class AttachmentCollection
      */
     public $attachments;
 
-    public function __construct(array $attachments = null)
+    public function __construct(array $attachments =null)
     {
         $this->attachments = $attachments;
     }

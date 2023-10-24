@@ -17,7 +17,7 @@ namespace BeSimple\SoapCommon\Mime;
  *
  * @author Andreas Schamberger <mail@andreass.net>
  */
-abstract class PartHeader
+abstract class AbstractPartHeader
 {
     /** @var string[] array of headers with lower-cased keys */
     private $headers;
@@ -33,7 +33,7 @@ abstract class PartHeader
      *
      * @return void
      */
-    public function setHeader($name, $value, $subValue = null)
+    public function setHeader($name, $value, $subValue =null)
     {
         $lowerCaseName = mb_strtolower($name);
         $this->headersOriginalKeys[$lowerCaseName] = $name;
@@ -61,7 +61,7 @@ abstract class PartHeader
      *
      * @return mixed|array(mixed)
      */
-    public function getHeader($name, $subValue = null)
+    public function getHeader($name, $subValue =null)
     {
         $lowerCaseName = mb_strtolower($name);
         if (isset($this->headers[$lowerCaseName])) {

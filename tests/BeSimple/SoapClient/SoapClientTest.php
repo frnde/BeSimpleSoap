@@ -9,10 +9,10 @@ use BeSimple\SoapCommon\SoapOptionsBuilder;
 use Exception;
 use Fixtures\GenerateTestRequest;
 use Fixtures\GetUKLocationByCounty;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use SoapHeader;
 
-class SoapClientTest extends PHPUnit_Framework_TestCase
+class SoapClientTest extends TestCase
 {
     const CACHE_DIR = __DIR__ . '/../../../cache';
     const FIXTURES_DIR = __DIR__ . '/../../Fixtures';
@@ -24,12 +24,12 @@ class SoapClientTest extends PHPUnit_Framework_TestCase
 
     private $localWebServerProcess;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->localWebServerProcess = popen('php -S localhost:8000 > /dev/null 2>&1 &', 'r');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         pclose($this->localWebServerProcess);
     }
@@ -44,8 +44,8 @@ class SoapClientTest extends PHPUnit_Framework_TestCase
         $getUKLocationByCountyRequest->County = 'London';
         $soapResponse = $soapClient->soapCall('GetUKLocationByCounty', [$getUKLocationByCountyRequest]);
 
-        self::assertContains('GetUKLocationByCountyResult', $soapResponse->getContent());
-        self::assertContains('</GetUKLocationByCountyResponse>', $soapResponse->getContent());
+        self::assertStringContainsString('GetUKLocationByCountyResult', $soapResponse->getContent());
+        self::assertStringContainsString('</GetUKLocationByCountyResponse>', $soapResponse->getContent());
         self::assertEquals(self::TEST_ENDPOINT_UK, $soapResponse->getLocation());
     }
 
@@ -59,10 +59,10 @@ class SoapClientTest extends PHPUnit_Framework_TestCase
         $getUKLocationByCountyRequest->County = 'London';
         $soapResponse = $soapClient->soapCall('GetUKLocationByCounty', [$getUKLocationByCountyRequest]);
 
-        self::assertContains('Connection: close', $soapResponse->getTracingData()->getLastRequestHeaders());
-        self::assertContains('County>London</', $soapResponse->getTracingData()->getLastRequest());
-        self::assertContains('GetUKLocationByCountyResult', $soapResponse->getContent());
-        self::assertContains('</GetUKLocationByCountyResponse>', $soapResponse->getContent());
+        self::assertStringContainsString('Connection: close', $soapResponse->getTracingData()->getLastRequestHeaders());
+        self::assertStringContainsString('County>London</', $soapResponse->getTracingData()->getLastRequest());
+        self::assertStringContainsString('GetUKLocationByCountyResult', $soapResponse->getContent());
+        self::assertStringContainsString('</GetUKLocationByCountyResponse>', $soapResponse->getContent());
         self::assertEquals(self::TEST_ENDPOINT_UK, $soapResponse->getLocation());
     }
 
@@ -76,16 +76,16 @@ class SoapClientTest extends PHPUnit_Framework_TestCase
         $getUKLocationByCountyRequest->County = 'London';
         $soapResponse = $soapClient->soapCall('GetUKLocationByCounty', [$getUKLocationByCountyRequest]);
 
-        self::assertContains('Connection: Keep-Alive', $soapResponse->getTracingData()->getLastRequestHeaders());
-        self::assertContains('County>London</', $soapResponse->getTracingData()->getLastRequest());
-        self::assertContains('GetUKLocationByCountyResult', $soapResponse->getContent());
-        self::assertContains('</GetUKLocationByCountyResponse>', $soapResponse->getContent());
+        self::assertStringContainsString('Connection: Keep-Alive', $soapResponse->getTracingData()->getLastRequestHeaders());
+        self::assertStringContainsString('County>London</', $soapResponse->getTracingData()->getLastRequest());
+        self::assertStringContainsString('GetUKLocationByCountyResult', $soapResponse->getContent());
+        self::assertStringContainsString('</GetUKLocationByCountyResponse>', $soapResponse->getContent());
         self::assertEquals(self::TEST_ENDPOINT_UK, $soapResponse->getLocation());
     }
 
     public function testSoapCallWithCustomEndpointInvalidShouldFail()
     {
-        $this->setExpectedException(Exception::class, 't resolve host');
+        self::expectException(Exception::class, 't resolve host');
 
         $soapClient = $this->getSoapBuilder()->build(
             SoapClientOptionsBuilder::createWithEndpointLocation(self::TEST_REMOTE_ENDPOINT_NOT_WORKING),
@@ -98,7 +98,7 @@ class SoapClientTest extends PHPUnit_Framework_TestCase
 
     public function testSoapCallWithCacheEndpointDownShouldFail()
     {
-        $this->setExpectedException(Exception::class, 'Could not write WSDL cache file: Download failed with message');
+        self::expectException(Exception::class, 'Could not write WSDL cache file: Download failed with message');
 
         $this->getSoapBuilder()->build(
             SoapClientOptionsBuilder::createWithDefaults(),
@@ -112,7 +112,7 @@ class SoapClientTest extends PHPUnit_Framework_TestCase
 
     public function testSoapCallEndpointDownShouldFail()
     {
-        $this->setExpectedException(Exception::class, 'Parsing WSDL: Couldn\'t load from');
+        self::expectException(Exception::class, 'Parsing WSDL: Couldn\'t load from');
 
         $this->getSoapBuilder()->build(
             SoapClientOptionsBuilder::createWithDefaults(),
@@ -122,7 +122,7 @@ class SoapClientTest extends PHPUnit_Framework_TestCase
 
     public function testSoapCallNoSwaWithAttachmentMustFail()
     {
-        $this->setExpectedException(Exception::class, 'Non SWA SoapClient cannot handle SOAP action');
+        self::expectException(Exception::class, 'Non SWA SoapClient cannot handle SOAP action');
 
         $soapClient = $this->getSoapBuilder()->build(
             SoapClientOptionsBuilder::createWithDefaults(),
@@ -190,9 +190,9 @@ class SoapClientTest extends PHPUnit_Framework_TestCase
             $this->getMultiPartBoundary($tracingData->getLastRequest()),
             'MultiPart boundary must match in request XML and Content-Type: ...; boundary header'
         );
-        self::assertContains('boundary=Part_', $tracingData->getLastRequestHeaders(), 'Headers should link to boundary');
-        self::assertContains('start="<part-', $tracingData->getLastRequestHeaders(), 'Headers should link to first MultiPart');
-        self::assertContains('action="', $tracingData->getLastRequestHeaders(), 'Headers should contain SOAP action');
+        self::assertStringContainsString('boundary=Part_', $tracingData->getLastRequestHeaders(), 'Headers should link to boundary');
+        self::assertStringContainsString('start="<part-', $tracingData->getLastRequestHeaders(), 'Headers should link to first MultiPart');
+        self::assertStringContainsString('action="', $tracingData->getLastRequestHeaders(), 'Headers should contain SOAP action');
         self::assertEquals(
             $this->removeOneTimeData(
                 file_get_contents(
@@ -230,9 +230,9 @@ class SoapClientTest extends PHPUnit_Framework_TestCase
             $tracingData = $e->getSoapResponseTracingData();
         }
 
-        self::assertNotContains('boundary=Part_', $tracingData->getLastRequestHeaders(), 'Headers should link to boundary');
-        self::assertNotContains('start="<part-', $tracingData->getLastRequestHeaders(), 'Headers should link to first MultiPart');
-        self::assertContains('action="', $tracingData->getLastRequestHeaders(), 'Headers should contain SOAP action');
+        self::assertStringNotContainsString('boundary=Part_', $tracingData->getLastRequestHeaders(), 'Headers should link to boundary');
+        self::assertStringNotContainsString('start="<part-', $tracingData->getLastRequestHeaders(), 'Headers should link to first MultiPart');
+        self::assertStringContainsString('action="', $tracingData->getLastRequestHeaders(), 'Headers should contain SOAP action');
         self::assertStringEqualsFile(
             self::FIXTURES_DIR.'/Message/Request/GetUKLocationByCounty.request.message',
             $tracingData->getLastRequest(),
@@ -265,7 +265,7 @@ class SoapClientTest extends PHPUnit_Framework_TestCase
         $soapResponse = $soapClient->soapCall('generateTest', [$generateTestRequest]);
         $attachments = $soapResponse->getAttachments();
 
-        self::assertContains('</generateTestReturn>', $soapResponse->getResponseContent());
+        self::assertStringContainsString('</generateTestReturn>', $soapResponse->getResponseContent());
         self::assertTrue($soapResponse->hasAttachments());
         self::assertCount(1, $attachments);
 

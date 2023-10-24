@@ -2,8 +2,8 @@
 
 namespace BeSimple\SoapClient;
 
-use BeSimple\SoapCommon\SoapRequest;
-use BeSimple\SoapCommon\SoapResponse as CommonSoapResponse;
+use BeSimple\SoapCommon\AbstractSoapRequest;
+use BeSimple\SoapCommon\AbstractSoapResponse as CommonSoapResponse;
 
 class SoapResponse extends CommonSoapResponse
 {
@@ -11,7 +11,7 @@ class SoapResponse extends CommonSoapResponse
     protected $responseObject;
     /** @var SoapResponseTracingData */
     protected $tracingData;
-    /** @var SoapRequest */
+    /** @var AbstractSoapRequest */
     protected $request;
 
     public function getResponseContent()
@@ -49,7 +49,7 @@ class SoapResponse extends CommonSoapResponse
         return $this->request !== null;
     }
 
-    public function setRequest(SoapRequest $request)
+    public function setRequest(AbstractSoapRequest $request)
     {
         $this->request = $request;
     }

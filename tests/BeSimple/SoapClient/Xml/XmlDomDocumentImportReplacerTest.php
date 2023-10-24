@@ -8,16 +8,16 @@ use BeSimple\SoapCommon\Cache;
 use BeSimple\SoapCommon\Helper;
 use DOMDocument;
 use DOMXPath;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class XmlDomDocumentImportReplacerTest extends PHPUnit_Framework_TestCase
+class XmlDomDocumentImportReplacerTest extends TestCase
 {
     const NO_PARENT_FILE_PATH = null;
 
     /** @var XmlDomDocumentImportReplacer */
     private $xmlDomDocumentImportReplacer;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->xmlDomDocumentImportReplacer = new XmlDomDocumentImportReplacer();
     }
@@ -38,8 +38,8 @@ class XmlDomDocumentImportReplacerTest extends PHPUnit_Framework_TestCase
         $schemaPrefix,
         $schemaUrl,
         $locationAttributeName,
-        $parentFilePath = null,
-        $assertImportXmlSource = null
+        $parentFilePath =null,
+        $assertImportXmlSource =null
     ) {
         $wsdl = new DOMDocument();
         $wsdl->loadXML($xmlSource);
@@ -55,13 +55,13 @@ class XmlDomDocumentImportReplacerTest extends PHPUnit_Framework_TestCase
         );
         $wsdlSource = $wsdl->saveHTML();
 
-        self::assertContains(
+        self::assertStringContainsString(
             $assertImportXmlSource,
             $wsdlSource
         );
     }
 
-    public function provideXmlDocumentData()
+    public static function provideXmlDocumentData()
     {
         return [
             'wsdlWithoutParentPath' => [

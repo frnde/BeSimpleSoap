@@ -12,15 +12,15 @@
 
 namespace BeSimple\SoapCommon\Tests;
 
-use BeSimple\SoapCommon\Mime\MultiPart;
-use BeSimple\SoapCommon\Mime\Part;
-use BeSimple\SoapCommon\Mime\PartHeader;
+use BeSimple\SoapCommon\Mime\MultiAbstractPart;
+use BeSimple\SoapCommon\Mime\AbstractPart;
+use BeSimple\SoapCommon\Mime\AbstractPartHeader;
 
 class MultiPartTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstructor()
     {
-        $mp = new MultiPart();
+        $mp = new MultiAbstractPart();
 
         $this->assertEquals('1.0', $mp->getHeader('MIME-Version'));
         $this->assertEquals('multipart/related', $mp->getHeader('Content-Type'));
@@ -31,7 +31,7 @@ class MultiPartTest extends \PHPUnit_Framework_TestCase
 
     public function testGetMimeMessage()
     {
-        $mp = new MultiPart();
+        $mp = new MultiAbstractPart();
 
         /*
         string(51) "
@@ -39,7 +39,7 @@ class MultiPartTest extends \PHPUnit_Framework_TestCase
         */
         $this->assertEquals(51, strlen($mp->getMimeMessage()));
 
-        $p = new Part('test');
+        $p = new AbstractPart('test');
         $mp->addPart($p, true);
 
         /*
@@ -57,7 +57,7 @@ class MultiPartTest extends \PHPUnit_Framework_TestCase
 
     public function testGetMimeMessageWithHeaders()
     {
-        $mp = new MultiPart();
+        $mp = new MultiAbstractPart();
 
         /*
         string(189) "MIME-Version: 1.0
@@ -67,7 +67,7 @@ class MultiPartTest extends \PHPUnit_Framework_TestCase
         */
         $this->assertEquals(193, strlen($mp->getMimeMessage(true)));
 
-        $p = new Part('test');
+        $p = new AbstractPart('test');
         $mp->addPart($p, true);
 
         /*
@@ -87,7 +87,7 @@ class MultiPartTest extends \PHPUnit_Framework_TestCase
 
     public function testGetHeadersForHttp()
     {
-        $mp = new MultiPart();
+        $mp = new MultiAbstractPart();
 
         $result = array(
             'Content-Type: multipart/related; type="text/xml"; charset=utf-8; boundary="' . $mp->getHeader('Content-Type', 'boundary') . '"',
@@ -104,9 +104,9 @@ class MultiPartTest extends \PHPUnit_Framework_TestCase
 
     public function testAddGetPart()
     {
-        $mp = new MultiPart();
+        $mp = new MultiAbstractPart();
 
-        $p = new Part('test');
+        $p = new AbstractPart('test');
         $p->setHeader('Content-ID', 'mycontentid');
         $mp->addPart($p);
         $this->assertEquals($p, $mp->getPart('mycontentid'));
@@ -114,20 +114,20 @@ class MultiPartTest extends \PHPUnit_Framework_TestCase
 
     public function testAddGetPartWithMain()
     {
-        $mp = new MultiPart();
+        $mp = new MultiAbstractPart();
 
-        $p = new Part('test');
+        $p = new AbstractPart('test');
         $mp->addPart($p, true);
         $this->assertEquals($p, $mp->getPart());
     }
 
     public function testGetParts()
     {
-        $mp = new MultiPart();
+        $mp = new MultiAbstractPart();
 
-        $p1 = new Part('test');
+        $p1 = new AbstractPart('test');
         $mp->addPart($p1, true);
-        $p2 = new Part('test');
+        $p2 = new AbstractPart('test');
         $mp->addPart($p2);
 
         $withoutMain = array(

@@ -25,7 +25,7 @@ use BeSimple\SoapCommon\WsSecurityKey;
  *
  * @author Andreas Schamberger <mail@andreass.net>
  */
-abstract class WsSecurityFilterClientServer
+abstract class AbstractWsSecurityFilterClientServer
 {
     /**
      * The date format to be used with {@link \DateTime}
@@ -117,7 +117,7 @@ abstract class WsSecurityFilterClientServer
      * @param int     $expires      (SMS 10) Security timestamp expires time in seconds.
      * @param string  $actor        SOAP actor
      */
-    public function __construct($addTimestamp = true, $expires = 300, $actor = null)
+    public function __construct($addTimestamp =true, $expires =300, $actor =null)
     {
         $this->addTimestamp = $addTimestamp;
         $this->expires      = $expires;
@@ -172,7 +172,7 @@ abstract class WsSecurityFilterClientServer
      *
      * @return void
      */
-    public function setSecurityOptionsEncryption($tokenReference, $encryptSignature = false)
+    public function setSecurityOptionsEncryption($tokenReference, $encryptSignature =false)
     {
         $this->tokenReferenceEncryption = $tokenReference;
         $this->encryptSignature         = $encryptSignature;
@@ -186,7 +186,7 @@ abstract class WsSecurityFilterClientServer
      *
      * @return void
      */
-    public function setSecurityOptionsSignature($tokenReference, $signAllHeaders = false)
+    public function setSecurityOptionsSignature($tokenReference, $signAllHeaders =false)
     {
         $this->tokenReferenceSignature = $tokenReference;
         $this->signAllHeaders          = $signAllHeaders;
@@ -202,7 +202,7 @@ abstract class WsSecurityFilterClientServer
      *
      * @return \DOMElement
      */
-    protected function createKeyInfo(FilterHelper $filterHelper, $tokenReference, $guid, XmlSecurityKey $xmlSecurityKey = null)
+    protected function createKeyInfo(FilterHelper $filterHelper, $tokenReference, $guid, XmlSecurityKey $xmlSecurityKey =null)
     {
         $keyInfo = $filterHelper->createElement(XmlSecurityDSig::NS_XMLDSIG, 'KeyInfo');
         $securityTokenReference = $filterHelper->createElement(Helper::NS_WSS, 'SecurityTokenReference');

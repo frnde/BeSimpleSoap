@@ -21,7 +21,7 @@ use DOMDocument;
  * @author Christian Kerl <christian-kerl@web.de>
  * @author Andreas Schamberger <mail@andreass.net>
  */
-abstract class SoapMessage
+abstract class AbstractSoapMessage
 {
     /**
      * $_SERVER key for 'Content-Type' header.
@@ -49,7 +49,7 @@ abstract class SoapMessage
      *
      * @var array (string=>string)
      */
-    static protected $versionToContentTypeMap = [
+    protected static $versionToContentTypeMap = [
         SOAP_1_1 => 'text/xml; charset=utf-8',
         SOAP_1_2 => 'application/soap+xml; charset=utf-8'
     ];
@@ -64,7 +64,7 @@ abstract class SoapMessage
     /**
      * Mime attachments.
      *
-     * @var \BeSimple\SoapCommon\Mime\Part[]
+     * @var \BeSimple\SoapCommon\Mime\AbstractPart[]
      */
     protected $attachments;
 
@@ -141,7 +141,7 @@ abstract class SoapMessage
     /**
      * Get attachments.
      *
-     * @return \BeSimple\SoapCommon\Mime\Part[]
+     * @return \BeSimple\SoapCommon\Mime\AbstractPart[]
      */
     public function getAttachments()
     {
@@ -151,7 +151,7 @@ abstract class SoapMessage
     /**
      * Set SOAP action.
      *
-     * @param \BeSimple\SoapCommon\Mime\Part[] $attachments
+     * @param \BeSimple\SoapCommon\Mime\AbstractPart[] $attachments
      */
     public function setAttachments(array $attachments)
     {

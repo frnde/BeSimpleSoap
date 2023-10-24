@@ -12,21 +12,21 @@
 
 namespace BeSimple\SoapCommon\Tests;
 
-use BeSimple\SoapCommon\Mime\PartHeader;
-use BeSimple\SoapCommon\Tests\Fixtures\MimePartHeader;
+use BeSimple\SoapCommon\Mime\AbstractPartHeader;
+use BeSimple\SoapCommon\Tests\Fixtures\MimeAbstractPartHeader;
 
 class PartHeaderTest extends \PHPUnit_Framework_TestCase
 {
     public function testSetGetHeader()
     {
-        $ph = new MimePartHeader();
+        $ph = new MimeAbstractPartHeader();
         $ph->setHeader('Content-Type', 'text/xml');
         $this->assertEquals('text/xml', $ph->getHeader('Content-Type'));
     }
 
     public function testSetGetHeaderSubvalue()
     {
-        $ph = new MimePartHeader();
+        $ph = new MimeAbstractPartHeader();
         $ph->setHeader('Content-Type', 'utf-8', 'charset');
         $this->assertEquals(null, $ph->getHeader('Content-Type', 'charset'));
 
@@ -37,7 +37,7 @@ class PartHeaderTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateHeaders()
     {
-        $ph = new MimePartHeader();
+        $ph = new MimeAbstractPartHeader();
 
         $class = new \ReflectionClass($ph);
         $method = $class->getMethod('generateHeaders');

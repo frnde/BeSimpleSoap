@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the BeSimpleSoapServer.
+ * This file is part of the BeSimpleSoapClient.
  *
  * (c) Christian Kerl <christian-kerl@web.de>
  * (c) Francis Besset <francis.besset@gmail.com>
@@ -10,17 +10,17 @@
  * with this source code in the file LICENSE.
  */
 
-namespace BeSimple\SoapServer;
+namespace BeSimple\SoapClient;
 
 use ass\XmlSecurity\DSig as XmlSecurityDSig;
 use ass\XmlSecurity\Enc as XmlSecurityEnc;
 use BeSimple\SoapCommon\FilterHelper;
 use BeSimple\SoapCommon\Helper;
-use BeSimple\SoapCommon\SoapRequest as CommonSoapRequest;
-use BeSimple\SoapCommon\SoapRequestFilter;
-use BeSimple\SoapCommon\SoapResponse as CommonSoapResponse;
-use BeSimple\SoapCommon\SoapResponseFilter;
-use BeSimple\SoapCommon\WsSecurityFilterClientServer;
+use BeSimple\SoapCommon\AbstractSoapRequest as CommonSoapRequest;
+use BeSimple\SoapCommon\SoapRequestFilterInterface;
+use BeSimple\SoapCommon\AbstractSoapResponse as CommonSoapResponse;
+use BeSimple\SoapCommon\SoapResponseFilterInterface;
+use BeSimple\SoapCommon\AbstractWsSecurityFilterClientServer;
 
 /**
  * This plugin implements a subset of the following standards:
@@ -33,25 +33,60 @@ use BeSimple\SoapCommon\WsSecurityFilterClientServer;
  *
  * @author Andreas Schamberger <mail@andreass.net>
  */
-class WsSecurityFilter extends WsSecurityFilterClientServer implements SoapRequestFilter, SoapResponseFilter
+class AbstractWsSecurityFilterInterfaceInterface extends AbstractWsSecurityFilterClientServer implements SoapRequestFilterInterface, SoapResponseFilterInterface
 {
     /**
-     * Username/password callback that returns password or null.
-     *
-     * @var callable
+     * (UT 3.1) Password type: plain text.
      */
-    protected $usernamePasswordCallback;
+    const PASSWORD_TYPE_TEXT = 0;
 
     /**
-     * Set username/password callback that returns password or null.
+     * (UT 3.1) Password type: digest.
+     */
+    const PASSWORD_TYPE_DIGEST = 1;
+
+    /**
+     * (UT 3.1) Password.
      *
-     * @param callable $callback Username/password callback function
+     * @var string
+     */
+    protected $password;
+
+    /**
+     * (UT 3.1) Password type: text or digest.
+     *
+     * @var int
+     */
+    protected $passwordType;
+
+    /**
+     * (UT 3.1) Username.
+     *
+     * @var string
+     */
+    protected $username;
+
+    /**
+     * User WsSecurityKey.
+     *
+     * @var \BeSimple\SoapCommon\WsSecurityKey
+     */
+    protected $userSecurityKey;
+
+    /**
+     * Add user data.
+     *
+     * @param string $username     Username
+     * @param string $password     Password
+     * @param int    $passwordType self::PASSWORD_TYPE_DIGEST | self::PASSWORD_TYPE_TEXT
      *
      * @return void
      */
-    public function setUsernamePasswordCallback($callback)
+    public function addUserData($username, $password =null, $passwordType =self::PASSWORD_TYPE_DIGEST)
     {
-        $this->usernamePasswordCallback = $callback;
+        $this->username     = $username;
+        $this->password     = $password;
+        $this->passwordType = $passwordType;
     }
 
     /**
@@ -60,13 +95,15 @@ class WsSecurityFilter extends WsSecurityFilterClientServer implements SoapReque
     public function resetFilter()
     {
         parent::resetFilter();
-        $this->usernamePasswordCallback = null;
+        $this->password     = null;
+        $this->passwordType = null;
+        $this->username     = null;
     }
 
     /**
      * Modify the given request XML.
      *
-     * @param \BeSimple\SoapCommon\SoapRequest $request SOAP request
+     * @param \BeSimple\SoapCommon\AbstractSoapRequest $request SOAP request
      * @param int $attachmentType
      *
      * @return void
@@ -75,92 +112,6 @@ class WsSecurityFilter extends WsSecurityFilterClientServer implements SoapReque
     {
         // get \DOMDocument from SOAP request
         $dom = $request->getContentDocument();
-
-        // locate security header
-        $security = $dom->getElementsByTagNameNS(Helper::NS_WSS, 'Security')->item(0);
-        if (null !== $security) {
-
-            // is security header still valid?
-            $query = '//'.Helper::PFX_WSU.':Timestamp/'.Helper::PFX_WSU.':Expires';
-            $xpath = new \DOMXPath($dom);
-            $xpath->registerNamespace(Helper::PFX_WSU, Helper::NS_WSU);
-            $expires = $xpath->query($query, $security)->item(0);
-
-            if (null !== $expires) {
-                $expiresDatetime = \DateTime::createFromFormat(self::DATETIME_FORMAT, $expires->textContent, new \DateTimeZone('UTC'));
-                $currentDatetime = new \DateTime('now', new \DateTimeZone('UTC'));
-
-                if ($currentDatetime > $expiresDatetime) {
-                    throw new \SoapFault('wsu:MessageExpired', 'Security semantics are expired');
-                }
-            }
-
-            $usernameToken = $security->getElementsByTagNameNS(Helper::NS_WSS, 'UsernameToken')->item(0);
-            if (null !== $usernameToken) {
-                $usernameTokenUsername = $usernameToken->getElementsByTagNameNS(Helper::NS_WSS, 'Username')->item(0);
-                $usernameTokenPassword = $usernameToken->getElementsByTagNameNS(Helper::NS_WSS, 'Password')->item(0);
-
-                $password = call_user_func($this->usernamePasswordCallback, $usernameTokenUsername->textContent);
-
-                if ($usernameTokenPassword->getAttribute('Type') == Helper::NAME_WSS_UTP . '#PasswordDigest') {
-                    $nonce = $usernameToken->getElementsByTagNameNS(Helper::NS_WSS, 'Nonce')->item(0);
-                    $created = $usernameToken->getElementsByTagNameNS(Helper::NS_WSU, 'Created')->item(0);
-                    $password = base64_encode(sha1(base64_decode($nonce->textContent) . $created->textContent . $password, true));
-                }
-
-                if (null === $password || $usernameTokenPassword->textContent != $password) {
-                    throw new \SoapFault('wsse:FailedAuthentication', 'The security token could not be authenticated or authorized');
-                }
-            }
-
-            // add SecurityTokenReference resolver for KeyInfo
-            $keyResolver = array($this, 'keyInfoSecurityTokenReferenceResolver');
-            XmlSecurityDSig::addKeyInfoResolver(Helper::NS_WSS, 'SecurityTokenReference', $keyResolver);
-
-            // do we have a reference list in header
-            $referenceList = XmlSecurityEnc::locateReferenceList($security);
-            // get a list of encrypted nodes
-            $encryptedNodes = XmlSecurityEnc::locateEncryptedData($dom, $referenceList);
-            // decrypt them
-            if (null !== $encryptedNodes) {
-                foreach ($encryptedNodes as $encryptedNode) {
-                    XmlSecurityEnc::decryptNode($encryptedNode);
-                }
-            }
-
-            // locate signature node
-            $signature = XmlSecurityDSig::locateSignature($security);
-            if (null !== $signature) {
-                // verify references
-                $options = array(
-                    'id_ns_prefix' => Helper::PFX_WSU,
-                    'id_prefix_ns' => Helper::NS_WSU,
-                );
-                if (XmlSecurityDSig::verifyReferences($signature, $options) !== true) {
-                    throw new \SoapFault('wsse:FailedCheck', 'The signature or decryption was invalid');
-                }
-                // verify signature
-                if (XmlSecurityDSig::verifyDocumentSignature($signature) !== true) {
-                    throw new \SoapFault('wsse:FailedCheck', 'The signature or decryption was invalid');
-                }
-            }
-
-            $security->parentNode->removeChild($security);
-        }
-    }
-
-    /**
-     * Modify the given request XML.
-     *
-     * @param \BeSimple\SoapCommon\SoapResponse $response SOAP response
-     * @param int $attachmentType
-     *
-     * @return void
-     */
-    public function filterResponse(CommonSoapResponse $response, $attachmentType)
-    {
-        // get \DOMDocument from SOAP response
-        $dom = $response->getContentDocument();
 
         // create FilterHelper
         $filterHelper = new FilterHelper($dom);
@@ -176,7 +127,7 @@ class WsSecurityFilter extends WsSecurityFilterClientServer implements SoapReque
 
         // create security header
         $security = $filterHelper->createElement(Helper::NS_WSS, 'Security');
-        $filterHelper->addHeaderElement($security, true, $this->actor, $response->getVersion());
+        $filterHelper->addHeaderElement($security, true, $this->actor, $request->getVersion());
 
         if (true === $this->addTimestamp || null !== $this->expires) {
             $timestamp = $filterHelper->createElement(Helper::NS_WSU, 'Timestamp');
@@ -189,6 +140,38 @@ class WsSecurityFilter extends WsSecurityFilterClientServer implements SoapReque
                 $timestamp->appendChild($expires);
             }
             $security->appendChild($timestamp);
+        }
+
+        if (null !== $this->username) {
+            $usernameToken = $filterHelper->createElement(Helper::NS_WSS, 'UsernameToken');
+            $security->appendChild($usernameToken);
+
+            $username = $filterHelper->createElement(Helper::NS_WSS, 'Username', $this->username);
+            $usernameToken->appendChild($username);
+
+            if (null !== $this->password
+                && (null === $this->userSecurityKey
+                    || (null !== $this->userSecurityKey && !$this->userSecurityKey->hasPrivateKey()))) {
+
+                if (self::PASSWORD_TYPE_DIGEST === $this->passwordType) {
+                    $nonce = mt_rand();
+                    $password = base64_encode(sha1($nonce . $createdTimestamp . $this->password, true));
+                    $passwordType = Helper::NAME_WSS_UTP . '#PasswordDigest';
+                } else {
+                    $password = $this->password;
+                    $passwordType = Helper::NAME_WSS_UTP . '#PasswordText';
+                }
+                $password = $filterHelper->createElement(Helper::NS_WSS, 'Password', $password);
+                $filterHelper->setAttribute($password, null, 'Type', $passwordType);
+                $usernameToken->appendChild($password);
+                if (self::PASSWORD_TYPE_DIGEST === $this->passwordType) {
+                    $nonce = $filterHelper->createElement(Helper::NS_WSS, 'Nonce', base64_encode($nonce));
+                    $usernameToken->appendChild($nonce);
+
+                    $created = $filterHelper->createElement(Helper::NS_WSU, 'Created', $createdTimestamp);
+                    $usernameToken->appendChild($created);
+                }
+            }
         }
 
         if (null !== $this->userSecurityKey && $this->userSecurityKey->hasKeys()) {
@@ -237,6 +220,56 @@ class WsSecurityFilter extends WsSecurityFilterClientServer implements SoapReque
                     XmlSecurityEnc::encryptNode($node, $type, $this->serviceSecurityKey->getPrivateKey(), $referenceList, $keyInfo);
                 }
             }
+        }
+    }
+
+    /**
+     * Modify the given request XML.
+     *
+     * @param \BeSimple\SoapCommon\AbstractSoapResponse $response SOAP response
+     * @param int $attachmentType
+     *
+     * @return void
+     */
+    public function filterResponse(CommonSoapResponse $response, $attachmentType)
+    {
+        // get \DOMDocument from SOAP response
+        $dom = $response->getContentDocument();
+
+        // locate security header
+        $security = $dom->getElementsByTagNameNS(Helper::NS_WSS, 'Security')->item(0);
+        if (null !== $security) {
+            // add SecurityTokenReference resolver for KeyInfo
+            $keyResolver = array($this, 'keyInfoSecurityTokenReferenceResolver');
+            XmlSecurityDSig::addKeyInfoResolver(Helper::NS_WSS, 'SecurityTokenReference', $keyResolver);
+            // do we have a reference list in header
+            $referenceList = XmlSecurityEnc::locateReferenceList($security);
+            // get a list of encrypted nodes
+            $encryptedNodes = XmlSecurityEnc::locateEncryptedData($dom, $referenceList);
+            // decrypt them
+            if (null !== $encryptedNodes) {
+                foreach ($encryptedNodes as $encryptedNode) {
+                    XmlSecurityEnc::decryptNode($encryptedNode);
+                }
+            }
+            // locate signature node
+            $signature = XmlSecurityDSig::locateSignature($security);
+            if (null !== $signature) {
+                // verify references
+                $options = array(
+                    'id_ns_prefix' => Helper::PFX_WSU,
+                    'id_prefix_ns' => Helper::NS_WSU,
+                );
+                if (XmlSecurityDSig::verifyReferences($signature, $options) !== true) {
+                    throw new \SoapFault('wsse:FailedCheck', 'The signature or decryption was invalid');
+                }
+                // verify signature
+                if (XmlSecurityDSig::verifyDocumentSignature($signature) !== true) {
+                    throw new \SoapFault('wsse:FailedCheck', 'The signature or decryption was invalid');
+                }
+            }
+
+            $security->parentNode->removeChild($security);
         }
     }
 }

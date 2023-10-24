@@ -10,66 +10,45 @@ use BeSimple\SoapCommon\SoapOptions\SoapFeatures\SoapFeatures;
 
 class SoapOptions
 {
-    const SOAP_VERSION_1_1 = \SOAP_1_1;
-    const SOAP_VERSION_1_2 = \SOAP_1_2;
-    const SOAP_CONNECTION_KEEP_ALIVE_ON = true;
-    const SOAP_CONNECTION_KEEP_ALIVE_OFF = false;
-    const SOAP_ENCODING_UTF8 = 'UTF-8';
-    const SOAP_SINGLE_ELEMENT_ARRAYS_OFF = 0;
-    const SOAP_CACHE_TYPE_NONE = Cache::TYPE_NONE;
-    const SOAP_CACHE_TYPE_DISK = Cache::TYPE_DISK;
-    const SOAP_CACHE_TYPE_MEMORY = Cache::TYPE_MEMORY;
-    const SOAP_CACHE_TYPE_DISK_MEMORY = Cache::TYPE_DISK_MEMORY;
-    const SOAP_ATTACHMENTS_OFF = null;
-    const SOAP_ATTACHMENTS_TYPE_BASE64 = Helper::ATTACHMENTS_TYPE_BASE64;
-    const SOAP_ATTACHMENTS_TYPE_MTOM = Helper::ATTACHMENTS_TYPE_MTOM;
-    const SOAP_ATTACHMENTS_TYPE_SWA = Helper::ATTACHMENTS_TYPE_SWA;
-
-    private $soapVersion;
-    private $encoding;
-    private $connectionKeepAlive;
-    private $soapFeatures;
-    private $wsdlFile;
-    private $wsdlCacheType;
-    private $wsdlCacheDir;
-    private $classMap;
-    private $typeConverterCollection;
-    private $attachmentType;
+    public final const SOAP_VERSION_1_1 = \SOAP_1_1;
+    public final const SOAP_VERSION_1_2 = \SOAP_1_2;
+    public final const SOAP_CONNECTION_KEEP_ALIVE_ON = true;
+    public final const SOAP_CONNECTION_KEEP_ALIVE_OFF = false;
+    public final const SOAP_ENCODING_UTF8 = 'UTF-8';
+    public final const SOAP_SINGLE_ELEMENT_ARRAYS_OFF = 0;
+    public final const SOAP_CACHE_TYPE_NONE = Cache::TYPE_NONE;
+    public final const SOAP_CACHE_TYPE_DISK = Cache::TYPE_DISK;
+    public final const SOAP_CACHE_TYPE_MEMORY = Cache::TYPE_MEMORY;
+    public final const SOAP_CACHE_TYPE_DISK_MEMORY = Cache::TYPE_DISK_MEMORY;
+    public final const SOAP_ATTACHMENTS_OFF = null;
+    public final const SOAP_ATTACHMENTS_TYPE_BASE64 = Helper::ATTACHMENTS_TYPE_BASE64;
+    public final const SOAP_ATTACHMENTS_TYPE_MTOM = Helper::ATTACHMENTS_TYPE_MTOM;
+    public final const SOAP_ATTACHMENTS_TYPE_SWA = Helper::ATTACHMENTS_TYPE_SWA;
 
     /**
      * @param int $soapVersion = SoapOptions::SOAP_VERSION_1_1|SoapOptions::SOAP_VERSION_1_2
      * @param string $encoding = SoapOptions::SOAP_ENCODING_UTF8
      * @param bool $connectionKeepAlive = SoapOptions::SOAP_CONNECTION_KEEP_ALIVE_ON|SoapOptions::SOAP_CONNECTION_KEEP_ALIVE_OFF
-     * @param SoapFeatures $features
+     * @param SoapFeatures $soapFeatures
      * @param string $wsdlFile
      * @param int $wsdlCacheType = SoapOptions::SOAP_CACHE_TYPE_NONE|SoapOptions::SOAP_CACHE_TYPE_MEMORY|SoapOptions::SOAP_CACHE_TYPE_DISK|SoapOptions::SOAP_CACHE_TYPE_DISK_MEMORY
-     * @param string|null $wsdlCacheDir = null
      * @param ClassMap $classMap
      * @param TypeConverterCollection $typeConverterCollection
+     * @param string|null $wsdlCacheDir = null
      * @param int|null $attachmentType = SoapOptions::SOAP_ATTACHMENTS_OFF|SoapOptions::SOAP_ATTACHMENTS_TYPE_SWA|SoapOptions::ATTACHMENTS_TYPE_MTOM|SoapOptions::ATTACHMENTS_TYPE_BASE64
      */
     public function __construct(
-        $soapVersion,
-        $encoding,
-        $connectionKeepAlive,
-        SoapFeatures $features,
-        $wsdlFile,
-        $wsdlCacheType,
-        $wsdlCacheDir = null,
-        ClassMap $classMap,
-        TypeConverterCollection $typeConverterCollection,
-        $attachmentType = null
+        private $soapVersion,
+        private $encoding,
+        private $connectionKeepAlive,
+        private SoapFeatures $soapFeatures,
+        private $wsdlFile,
+        private $wsdlCacheType,
+        private ClassMap $classMap,
+        private TypeConverterCollection $typeConverterCollection,
+        private ?string $wsdlCacheDir =null,
+        private $attachmentType =null
     ) {
-        $this->soapVersion = $soapVersion;
-        $this->encoding = $encoding;
-        $this->connectionKeepAlive = $connectionKeepAlive;
-        $this->soapFeatures = $features;
-        $this->wsdlFile = $wsdlFile;
-        $this->wsdlCacheType = $wsdlCacheType;
-        $this->wsdlCacheDir = $wsdlCacheDir;
-        $this->classMap = $classMap;
-        $this->typeConverterCollection = $typeConverterCollection;
-        $this->attachmentType = $attachmentType;
     }
 
     public function getSoapVersion()

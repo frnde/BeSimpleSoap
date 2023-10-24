@@ -48,12 +48,12 @@ class SoapClientOptions
         $trace,
         $exceptions,
         $userAgent,
-        $compression = null,
-        SoapServerAuthenticationInterface $authentication = null,
-        SoapServerProxy $proxy = null,
-        $location = null,
-        $resolveRemoteIncludes = false,
-        $sslVersion = null
+        $compression =null,
+        SoapServerAuthenticationInterface $authentication =null,
+        SoapServerProxy $proxy =null,
+        $location =null,
+        $resolveRemoteIncludes =false,
+        $sslVersion =null
     ) {
         $this->trace = $trace;
         $this->exceptions = $exceptions;

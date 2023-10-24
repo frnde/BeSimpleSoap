@@ -21,7 +21,7 @@ class Part
     protected $type;
     protected $nillable;
 
-    public function __construct($name, $type, $nillable = false)
+    public function __construct($name, $type, $nillable =false)
     {
         $this->name = $name;
         $this->type = $type;

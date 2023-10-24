@@ -2,7 +2,7 @@
 
 namespace BeSimple\SoapServer;
 
-use BeSimple\SoapCommon\SoapResponse as CommonSoapResponse;
+use BeSimple\SoapCommon\AbstractSoapResponse as CommonSoapResponse;
 
 class SoapResponse extends CommonSoapResponse
 {

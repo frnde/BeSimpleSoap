@@ -46,7 +46,7 @@ class XmlFileDomDocumentProcessor
      * @param boolean $parentFilePath Parent file name
      * @return DOMDocument
      */
-    private static function getXmlFileDomDocument(Curl $curl, $cacheType, $xmlFileSource, $parentFilePath = null)
+    private static function getXmlFileDomDocument(Curl $curl, $cacheType, $xmlFileSource, $parentFilePath =null)
     {
         $document = new DOMDocument('1.0', 'utf-8');
         if ($document->loadXML($xmlFileSource) === false) {

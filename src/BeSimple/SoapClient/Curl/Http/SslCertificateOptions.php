@@ -17,9 +17,9 @@ class SslCertificateOptions
      */
     public function __construct(
         $certificateLocalPath,
-        $certificatePassPhrase = null,
-        $certificateAuthorityInfo = null,
-        $certificateAuthorityPath = null
+        $certificatePassPhrase =null,
+        $certificateAuthorityInfo =null,
+        $certificateAuthorityPath =null
     ) {
         $this->certificateLocalPath = $certificateLocalPath;
         $this->certificatePassPhrase = $certificatePassPhrase;

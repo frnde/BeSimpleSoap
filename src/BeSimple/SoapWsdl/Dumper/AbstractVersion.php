@@ -41,7 +41,7 @@ abstract class AbstractVersion implements VersionInterface
 
     protected $servicePortNode;
 
-    public function __construct($soapNs, $typeNs, $name, $namespace, $portTypeName, $location, $style = \SOAP_RPC, $transport = 'http://schemas.xmlsoap.org/soap/http')
+    public function __construct($soapNs, $typeNs, $name, $namespace, $portTypeName, $location, $style =\SOAP_RPC, $transport ='http://schemas.xmlsoap.org/soap/http')
     {
         $this->soapNs = $soapNs;
         $this->typeNs = $typeNs;

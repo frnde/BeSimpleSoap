@@ -18,13 +18,13 @@ namespace BeSimple\SoapCommon;
  *
  * @author Christian Kerl <christian-kerl@web.de>
  */
-interface SoapRequestFilter
+interface SoapRequestFilterInterface
 {
     /**
      * Modify SOAP response.
      *
-     * @param SoapRequest $request SOAP request
+     * @param AbstractSoapRequest $request SOAP request
      * @param int $attachmentType = SoapOptions::SOAP_ATTACHMENTS_TYPE_SWA|SoapOptions::ATTACHMENTS_TYPE_MTOM|SoapOptions::ATTACHMENTS_TYPE_BASE64
      */
-    public function filterRequest(SoapRequest $request, $attachmentType);
+    public function filterRequest(AbstractSoapRequest $request, $attachmentType);
 }

@@ -2,9 +2,9 @@
 
 namespace BeSimple\SoapCommon\Mime\Boundary;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class MimeBoundaryAnalyserTest extends PHPUnit_Framework_TestCase
+class MimeBoundaryAnalyserTest extends TestCase
 {
     const EXPECTED_HAS_BOUNDARY = true;
     const EXPECTED_HAS_NO_BOUNDARY = false;
@@ -35,7 +35,7 @@ class MimeBoundaryAnalyserTest extends PHPUnit_Framework_TestCase
         self::assertEquals($expectIsBoundary, $isMessageBoundary);
     }
 
-    public function mimeMessageLinesDataProvider()
+    public static function mimeMessageLinesDataProvider()
     {
         return [
             [
@@ -63,7 +63,7 @@ class MimeBoundaryAnalyserTest extends PHPUnit_Framework_TestCase
         ];
     }
 
-    public function mimeMessageLineDataProvider()
+    public static function mimeMessageLineDataProvider()
     {
         return [
             ['-- this line is boundary', self::EXPECTED_IS_BOUNDARY],

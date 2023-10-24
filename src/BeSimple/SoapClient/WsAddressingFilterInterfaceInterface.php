@@ -14,10 +14,10 @@ namespace BeSimple\SoapClient;
 
 use BeSimple\SoapCommon\FilterHelper;
 use BeSimple\SoapCommon\Helper;
-use BeSimple\SoapCommon\SoapRequest as CommonSoapRequest;
-use BeSimple\SoapCommon\SoapRequestFilter;
-use BeSimple\SoapCommon\SoapResponse as CommonSoapResponse;
-use BeSimple\SoapCommon\SoapResponseFilter;
+use BeSimple\SoapCommon\AbstractSoapRequest as CommonSoapRequest;
+use BeSimple\SoapCommon\SoapRequestFilterInterface;
+use BeSimple\SoapCommon\AbstractSoapResponse as CommonSoapResponse;
+use BeSimple\SoapCommon\SoapResponseFilterInterface;
 
 /**
  * This plugin implements a subset of the following standards:
@@ -35,7 +35,7 @@ use BeSimple\SoapCommon\SoapResponseFilter;
  *
  * @author Andreas Schamberger <mail@andreass.net>
  */
-class WsAddressingFilter implements SoapRequestFilter, SoapResponseFilter
+class WsAddressingFilterInterfaceInterface implements SoapRequestFilterInterface, SoapResponseFilterInterface
 {
     /**
      * (2.1) Endpoint reference (EPR) anonymous default address.
@@ -211,7 +211,7 @@ class WsAddressingFilter implements SoapRequestFilter, SoapResponseFilter
      *
      * @return void
      */
-    public function setMessageId($messageId = null)
+    public function setMessageId($messageId =null)
     {
         if (null === $messageId) {
             $messageId = 'uuid:' . Helper::generateUuid();
@@ -228,7 +228,7 @@ class WsAddressingFilter implements SoapRequestFilter, SoapResponseFilter
      *
      * @return void
      */
-    public function setRelatesTo($relatesTo, $relationType = null)
+    public function setRelatesTo($relatesTo, $relationType =null)
     {
         $this->relatesTo = $relatesTo;
         if (null !== $relationType && $relationType != self::RELATIONSHIP_TYPE_REPLY) {
@@ -244,7 +244,7 @@ class WsAddressingFilter implements SoapRequestFilter, SoapResponseFilter
      *
      * @return void
      */
-    public function setReplyTo($replyTo = null)
+    public function setReplyTo($replyTo =null)
     {
         if (null === $replyTo) {
             $replyTo = self::ENDPOINT_REFERENCE_ANONYMOUS;
@@ -255,7 +255,7 @@ class WsAddressingFilter implements SoapRequestFilter, SoapResponseFilter
     /**
      * Modify the given request XML.
      *
-     * @param \BeSimple\SoapCommon\SoapRequest $request SOAP request
+     * @param \BeSimple\SoapCommon\AbstractSoapRequest $request SOAP request
      *
      * @return void
      */
@@ -324,7 +324,7 @@ class WsAddressingFilter implements SoapRequestFilter, SoapResponseFilter
     /**
      * Modify the given response XML.
      *
-     * @param \BeSimple\SoapCommon\SoapResponse $response SOAP response
+     * @param \BeSimple\SoapCommon\AbstractSoapResponse $response SOAP response
      *
      * @return void
      */

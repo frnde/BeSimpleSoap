@@ -2,10 +2,10 @@
 
 namespace BeSimple\SoapCommon\Fault;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use SoapFault;
 
-class SoapFaultParserTest extends PHPUnit_Framework_TestCase
+class SoapFaultParserTest extends TestCase
 {
     public function testParse()
     {

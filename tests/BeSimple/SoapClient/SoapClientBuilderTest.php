@@ -8,10 +8,10 @@ use BeSimple\SoapClient\SoapServerAuthentication\SoapServerAuthenticationBasic;
 use BeSimple\SoapCommon\ClassMap;
 use BeSimple\SoapCommon\SoapOptions\SoapOptions;
 use BeSimple\SoapCommon\SoapOptionsBuilder;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use SoapClient;
 
-class SoapClientBuilderTest extends PHPUnit_Framework_TestCase
+class SoapClientBuilderTest extends TestCase
 {
     const CACHE_DIR = __DIR__ . '/../../../cache';
     const FIXTURES_DIR = __DIR__ . '/../../Fixtures';

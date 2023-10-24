@@ -19,6 +19,6 @@ namespace BeSimple\SoapCommon;
  * @author Christian Kerl <christian-kerl@web.de>
  * @author Petr Bechyně <mail@petrbechyne.com>
  */
-class SoapResponse extends SoapMessage
+class AbstractSoapResponse extends AbstractSoapMessage
 {
 }

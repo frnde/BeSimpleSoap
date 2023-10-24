@@ -24,16 +24,16 @@ class SoapOptionsBuilder
 {
     public static function createWithDefaults(
         $wsdlFile,
-        $wsdlCacheType = SoapOptions::SOAP_CACHE_TYPE_NONE,
-        $wsdlCacheDir = null
+        $wsdlCacheType =SoapOptions::SOAP_CACHE_TYPE_NONE,
+        $wsdlCacheDir =null
     ) {
         return self::createWithClassMap($wsdlFile, new ClassMap(), $wsdlCacheType, $wsdlCacheDir);
     }
 
     public static function createWithDefaultsKeepAlive(
         $wsdlFile,
-        $wsdlCacheType = SoapOptions::SOAP_CACHE_TYPE_NONE,
-        $wsdlCacheDir = null
+        $wsdlCacheType =SoapOptions::SOAP_CACHE_TYPE_NONE,
+        $wsdlCacheDir =null
     ) {
         return self::createWithClassMapKeepAlive($wsdlFile, new ClassMap(), $wsdlCacheType, $wsdlCacheDir);
     }
@@ -41,8 +41,8 @@ class SoapOptionsBuilder
     public static function createSwaWithClassMap(
         $wsdlFile,
         ClassMap $classMap,
-        $wsdlCacheType = SoapOptions::SOAP_CACHE_TYPE_NONE,
-        $wsdlCacheDir = null
+        $wsdlCacheType =SoapOptions::SOAP_CACHE_TYPE_NONE,
+        $wsdlCacheDir =null
     ) {
         return self::createWithClassMap(
             $wsdlFile,
@@ -56,8 +56,8 @@ class SoapOptionsBuilder
     public static function createSwaWithClassMapV11(
         $wsdlFile,
         ClassMap $classMap,
-        $wsdlCacheType = SoapOptions::SOAP_CACHE_TYPE_NONE,
-        $wsdlCacheDir = null
+        $wsdlCacheType =SoapOptions::SOAP_CACHE_TYPE_NONE,
+        $wsdlCacheDir =null
     ) {
         return self::createWithClassMapV11(
             $wsdlFile,
@@ -71,9 +71,9 @@ class SoapOptionsBuilder
     public static function createWithClassMap(
         $wsdlFile,
         ClassMap $classMap,
-        $wsdlCacheType = SoapOptions::SOAP_CACHE_TYPE_NONE,
-        $wsdlCacheDir = null,
-        $attachmentType = null
+        $wsdlCacheType =SoapOptions::SOAP_CACHE_TYPE_NONE,
+        $wsdlCacheDir =null,
+        $attachmentType =null
     ) {
         if (!Cache::hasType($wsdlCacheType)) {
             throw new InvalidArgumentException('Invalid cache type');
@@ -93,9 +93,9 @@ class SoapOptionsBuilder
             ]),
             $wsdlFile,
             $wsdlCacheType,
-            $wsdlCacheDir,
             $classMap,
             new TypeConverterCollection(),
+            $wsdlCacheDir,
             $attachmentType
         );
     }
@@ -103,9 +103,9 @@ class SoapOptionsBuilder
     public static function createWithClassMapKeepAlive(
         $wsdlFile,
         ClassMap $classMap,
-        $wsdlCacheType = SoapOptions::SOAP_CACHE_TYPE_NONE,
-        $wsdlCacheDir = null,
-        $attachmentType = null
+        $wsdlCacheType =SoapOptions::SOAP_CACHE_TYPE_NONE,
+        $wsdlCacheDir =null,
+        $attachmentType =null
     ) {
         if (!Cache::hasType($wsdlCacheType)) {
             throw new InvalidArgumentException('Invalid cache type');
@@ -125,9 +125,9 @@ class SoapOptionsBuilder
             ]),
             $wsdlFile,
             $wsdlCacheType,
-            $wsdlCacheDir,
             $classMap,
             new TypeConverterCollection(),
+            $wsdlCacheDir,
             $attachmentType
         );
     }
@@ -135,9 +135,9 @@ class SoapOptionsBuilder
     public static function createWithClassMapV11(
         $wsdlFile,
         ClassMap $classMap,
-        $wsdlCacheType = SoapOptions::SOAP_CACHE_TYPE_NONE,
-        $wsdlCacheDir = null,
-        $attachmentType = null
+        $wsdlCacheType =SoapOptions::SOAP_CACHE_TYPE_NONE,
+        $wsdlCacheDir =null,
+        $attachmentType =null
     ) {
         if (!Cache::hasType($wsdlCacheType)) {
             throw new InvalidArgumentException('Invalid cache type');
@@ -157,9 +157,9 @@ class SoapOptionsBuilder
             ]),
             $wsdlFile,
             $wsdlCacheType,
-            $wsdlCacheDir,
             $classMap,
             new TypeConverterCollection(),
+            $wsdlCacheDir,
             $attachmentType
         );
     }

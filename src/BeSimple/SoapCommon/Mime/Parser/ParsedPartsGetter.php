@@ -3,8 +3,8 @@
 namespace BeSimple\SoapCommon\Mime\Parser;
 
 use BeSimple\SoapCommon\Mime\Boundary\MimeBoundaryAnalyser;
-use BeSimple\SoapCommon\Mime\MultiPart;
-use BeSimple\SoapCommon\Mime\Part;
+use BeSimple\SoapCommon\Mime\MultiAbstractPart;
+use BeSimple\SoapCommon\Mime\AbstractPart;
 use Exception;
 
 class ParsedPartsGetter
@@ -13,13 +13,13 @@ class ParsedPartsGetter
     const HAS_NO_HTTP_REQUEST_HEADERS = false;
 
     /**
-     * @param MultiPart $multiPart
+     * @param MultiAbstractPart $multiPart
      * @param string[] $mimeMessageLines
      * @param bool $hasHttpHeaders = self::HAS_HTTP_REQUEST_HEADERS|self::HAS_NO_HTTP_REQUEST_HEADERS
      * @return ParsedPartList
      */
     public static function getPartsFromMimeMessageLines(
-        MultiPart $multiPart,
+        MultiAbstractPart $multiPart,
         array $mimeMessageLines,
         $hasHttpHeaders
     ) {
@@ -53,7 +53,7 @@ class ParsedPartsGetter
                     list($headerName, $headerValue) = explode(':', $currentHeader, 2);
                     $headerValueWithNoCrAtTheEnd = trim($headerValue);
                     try {
-                        $headerValue = iconv_mime_decode($headerValueWithNoCrAtTheEnd, 0, Part::CHARSET_UTF8);
+                        $headerValue = iconv_mime_decode($headerValueWithNoCrAtTheEnd, 0, AbstractPart::CHARSET_UTF8);
                     } catch (Exception $e) {
                         if ($hitFirstBoundary === false) {
                             throw new Exception(
@@ -91,7 +91,7 @@ class ParsedPartsGetter
             } else {
                 if (MimeBoundaryAnalyser::isMessageLineBoundary($mimeMessageLine)) {
                     if (MimeBoundaryAnalyser::isMessageLineMiddleBoundary($mimeMessageLine, $contentTypeBoundary)) {
-                        if ($currentPart instanceof Part) {
+                        if ($currentPart instanceof AbstractPart) {
                             $currentPartContent = self::decodeContent(
                                 $currentPart,
                                 substr($messagePartStringContent, 0, -1)
@@ -109,7 +109,7 @@ class ParsedPartsGetter
                                 $parsedParts[] = new ParsedPart($currentPart, ParsedPart::PART_IS_NOT_MAIN);
                             }
                         }
-                        $currentPart = new Part();
+                        $currentPart = new AbstractPart();
                         $hitFirstBoundary = true;
                         $inHeader = true;
                         $messagePartStringContent = '';
@@ -149,29 +149,33 @@ class ParsedPartsGetter
             }
         }
 
+        if (count($parsedParts) < 3) {
+            throw new Exception('Could not parse headers');
+        }
+
         return new ParsedPartList($parsedParts);
     }
 
     /**
      * Decodes the content of a Mime part
      *
-     * @param Part $part    Part to add content
+     * @param AbstractPart $part    Part to add content
      * @param string $partStringContent Content to decode
      * @return string $partStringContent decodedContent
      */
-    private static function decodeContent(Part $part, $partStringContent)
+    private static function decodeContent(AbstractPart $part, $partStringContent)
     {
         $encoding = strtolower($part->getHeader('Content-Transfer-Encoding'));
         $charset = strtolower($part->getHeader('Content-Type', 'charset'));
 
-        if ($encoding === Part::ENCODING_BASE64) {
+        if ($encoding === AbstractPart::ENCODING_BASE64) {
             $partStringContent = base64_decode($partStringContent);
-        } elseif ($encoding === Part::ENCODING_QUOTED_PRINTABLE) {
+        } elseif ($encoding === AbstractPart::ENCODING_QUOTED_PRINTABLE) {
             $partStringContent = quoted_printable_decode($partStringContent);
         }
 
-        if ($charset !== Part::CHARSET_UTF8) {
-            return iconv($charset, Part::CHARSET_UTF8, $partStringContent);
+        if ($charset !== AbstractPart::CHARSET_UTF8) {
+            return iconv($charset, AbstractPart::CHARSET_UTF8, $partStringContent);
         }
 
         return $partStringContent;

@@ -45,7 +45,7 @@ class WsSecurityKey
      *
      * @return void
      */
-    public function addPrivateKey($encryptionType, $key = null, $keyIsFile = true, $passphrase = null)
+    public function addPrivateKey($encryptionType, $key =null, $keyIsFile =true, $passphrase =null)
     {
         $this->privateKey = XmlSecurityKey::factory($encryptionType, $key, $keyIsFile, XmlSecurityKey::TYPE_PRIVATE, $passphrase);
     }
@@ -59,7 +59,7 @@ class WsSecurityKey
      *
      * @return void
      */
-    public function addPublicKey($encryptionType, $key = null, $keyIsFile = true)
+    public function addPublicKey($encryptionType, $key =null, $keyIsFile =true)
     {
         $this->publicKey = XmlSecurityKey::factory($encryptionType, $key, $keyIsFile, XmlSecurityKey::TYPE_PUBLIC);
     }

@@ -15,7 +15,7 @@ namespace BeSimple\SoapServer;
 use BeSimple\SoapBundle\Soap\SoapAttachment;
 use BeSimple\SoapClient\SoapResponseTracingData;
 use BeSimple\SoapCommon\Mime\PartFactory;
-use BeSimple\SoapCommon\SoapMessage;
+use BeSimple\SoapCommon\AbstractSoapMessage;
 
 class SoapResponseFactory
 {
@@ -35,14 +35,14 @@ class SoapResponseFactory
         $location,
         $action,
         $version,
-        array $attachments = []
+        array $attachments =[]
     ) {
         $response = new SoapResponse();
         $response->setContent($content);
         $response->setLocation($location);
         $response->setAction($action);
         $response->setVersion($version);
-        $contentType = SoapMessage::getContentTypeForVersion($version);
+        $contentType = AbstractSoapMessage::getContentTypeForVersion($version);
         $response->setContentType($contentType);
         if (count($attachments) > 0) {
             $response->setAttachments(
@@ -71,7 +71,7 @@ class SoapResponseFactory
         $action,
         $version,
         SoapResponseTracingData $tracingData,
-        array $attachments = []
+        array $attachments =[]
     ) {
         $response = new SoapResponse();
         $response->setContent($content);
@@ -79,7 +79,7 @@ class SoapResponseFactory
         $response->setAction($action);
         $response->setVersion($version);
         $response->setTracingData($tracingData);
-        $contentType = SoapMessage::getContentTypeForVersion($version);
+        $contentType = AbstractSoapMessage::getContentTypeForVersion($version);
         $response->setContentType($contentType);
         if (count($attachments) > 0) {
             $response->setAttachments(

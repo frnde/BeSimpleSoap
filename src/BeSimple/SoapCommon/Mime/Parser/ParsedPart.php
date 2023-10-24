@@ -2,7 +2,7 @@
 
 namespace BeSimple\SoapCommon\Mime\Parser;
 
-use BeSimple\SoapCommon\Mime\Part;
+use BeSimple\SoapCommon\Mime\AbstractPart;
 
 class ParsedPart
 {
@@ -13,10 +13,10 @@ class ParsedPart
     private $isMain;
 
     /**
-     * @param Part $part
+     * @param AbstractPart $part
      * @param bool $isMain
      */
-    public function __construct(Part $part, $isMain)
+    public function __construct(AbstractPart $part, $isMain)
     {
         $this->part = $part;
         $this->isMain = $isMain;

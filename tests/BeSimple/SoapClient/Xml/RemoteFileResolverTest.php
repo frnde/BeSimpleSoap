@@ -2,9 +2,9 @@
 
 namespace BeSimple\SoapClient\Xml;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class RemoteFileResolverTest extends PHPUnit_Framework_TestCase
+class RemoteFileResolverTest extends TestCase
 {
     const FILE_IS_REMOTE = true;
     const FILE_IS_NOT_REMOTE = false;
@@ -12,7 +12,7 @@ class RemoteFileResolverTest extends PHPUnit_Framework_TestCase
     /** @var RemoteFileResolver */
     private $remoteFileResolver;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->remoteFileResolver = new RemoteFileResolver();
     }
@@ -29,7 +29,7 @@ class RemoteFileResolverTest extends PHPUnit_Framework_TestCase
         self::assertEquals($assertIsRemoteFile, $isRemoteFile);
     }
 
-    public function provideWsdlPaths()
+    public static function provideWsdlPaths()
     {
         return [
             ['http://endpoint.tld/path/to/wsdl.wsdl', self::FILE_IS_REMOTE],

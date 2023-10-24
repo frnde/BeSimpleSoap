@@ -4,17 +4,17 @@ namespace BeSimple\SoapClient;
 
 use BeSimple\SoapCommon\FilterHelper;
 use BeSimple\SoapCommon\Helper;
-use BeSimple\SoapCommon\SoapRequest;
-use BeSimple\SoapCommon\SoapRequestFilter;
+use BeSimple\SoapCommon\AbstractSoapRequest;
+use BeSimple\SoapCommon\SoapRequestFilterInterface;
 
 /**
  * XML MIME filter that fixes the namespace of xmime:contentType attribute.
  *
  * @author Andreas Schamberger <mail@andreass.net>
  */
-class XmlMimeFilter implements SoapRequestFilter
+class XmlMimeFilterInterface implements SoapRequestFilterInterface
 {
-    public function filterRequest(SoapRequest $request, $attachmentType)
+    public function filterRequest(AbstractSoapRequest $request, $attachmentType)
     {
         // get \DOMDocument from SOAP request
         $dom = $request->getContentDocument();

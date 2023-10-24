@@ -2,7 +2,7 @@
 
 namespace BeSimple\SoapCommon\Converter;
 
-use BeSimple\SoapCommon\Mime\Part as MimePart;
+use BeSimple\SoapCommon\Mime\AbstractPart as MimePart;
 
 /**
  * SwA type converter.

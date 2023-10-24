@@ -15,15 +15,15 @@ class SoapKernel
     /**
      * Applies all registered SoapRequestFilter to the given SoapRequest.
      *
-     * @param SoapRequest $request Soap request
-     * @param SoapRequestFilter[]|SoapResponseFilter[] $filters
+     * @param AbstractSoapRequest $request Soap request
+     * @param SoapRequestFilterInterface[]|SoapResponseFilterInterface[] $filters
      * @param int $attachmentType = SoapOptions::SOAP_ATTACHMENTS_TYPE_SWA|SoapOptions::ATTACHMENTS_TYPE_MTOM|SoapOptions::ATTACHMENTS_TYPE_BASE64
-     * @return SoapRequest
+     * @return AbstractSoapRequest
      */
-    public static function filterRequest(SoapRequest $request, array $filters, $attachmentType)
+    public static function filterRequest(AbstractSoapRequest $request, array $filters, $attachmentType)
     {
         foreach ($filters as $filter) {
-            if ($filter instanceof SoapRequestFilter) {
+            if ($filter instanceof SoapRequestFilterInterface) {
                 $request = $filter->filterRequest($request, $attachmentType);
             }
         }
@@ -34,15 +34,15 @@ class SoapKernel
     /**
      * Applies all registered SoapResponseFilter to the given SoapResponse.
      *
-     * @param SoapResponse $response SOAP response
-     * @param SoapRequestFilter[]|SoapResponseFilter[] $filters
+     * @param AbstractSoapResponse $response SOAP response
+     * @param SoapRequestFilterInterface[]|SoapResponseFilterInterface[] $filters
      * @param int $attachmentType = SoapOptions::SOAP_ATTACHMENTS_TYPE_SWA|SoapOptions::ATTACHMENTS_TYPE_MTOM|SoapOptions::ATTACHMENTS_TYPE_BASE64
      * @return \BeSimple\SoapClient\SoapResponse|\BeSimple\SoapServer\SoapResponse
      */
-    public static function filterResponse(SoapResponse $response, array $filters, $attachmentType)
+    public static function filterResponse(AbstractSoapResponse $response, array $filters, $attachmentType)
     {
         foreach ($filters as $filter) {
-            if ($filter instanceof SoapResponseFilter) {
+            if ($filter instanceof SoapResponseFilterInterface) {
                 $response = $filter->filterResponse($response, $attachmentType);
             }
         }

@@ -76,7 +76,7 @@ class Method
         return $this->headers;
     }
 
-    public function getHeader($name, $default = null)
+    public function getHeader($name, $default =null)
     {
         return $this->headers->get($name, $default);
     }

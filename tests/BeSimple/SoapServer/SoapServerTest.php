@@ -7,9 +7,9 @@ use BeSimple\SoapCommon\ClassMap;
 use BeSimple\SoapCommon\SoapOptionsBuilder;
 use Fixtures\DummyService;
 use Fixtures\SoapServerHandler;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class SoapServerTest extends PHPUnit_Framework_TestCase
+class SoapServerTest extends TestCase
 {
     const CACHE_DIR = __DIR__ . '/../../../cache';
     const FIXTURES_DIR = __DIR__ . '/../../Fixtures';
@@ -52,8 +52,8 @@ class SoapServerTest extends PHPUnit_Framework_TestCase
 
         file_put_contents(self::CACHE_DIR . '/SoapServerTestResponse.xml', $response->getContent());
 
-        self::assertNotContains("\r\n", $response->getContent(), 'Response cannot contain CRLF line endings');
-        self::assertContains('dummyServiceMethodResponse', $response->getContent());
+        self::assertStringNotContainsString("\r\n", $response->getContent(), 'Response cannot contain CRLF line endings');
+        self::assertStringContainsString('dummyServiceMethodResponse', $response->getContent());
         self::assertSame('DummyService.dummyServiceMethod', $response->getAction());
         self::assertFalse($response->hasAttachments(), 'Response should not contain attachments');
     }
@@ -80,8 +80,8 @@ class SoapServerTest extends PHPUnit_Framework_TestCase
 
         file_put_contents(self::CACHE_DIR . '/SoapServerTestResponseFromSwaRequestWithNoAttachments.xml', $response->getContent());
 
-        self::assertNotContains("\r\n", $response->getContent(), 'Response cannot contain CRLF line endings');
-        self::assertContains('dummyServiceMethodWithAttachmentsResponse', $response->getContent());
+        self::assertStringNotContainsString("\r\n", $response->getContent(), 'Response cannot contain CRLF line endings');
+        self::assertStringContainsString('dummyServiceMethodWithAttachmentsResponse', $response->getContent());
         self::assertSame('DummyService.dummyServiceMethodWithAttachments', $response->getAction());
         self::assertFalse($response->hasAttachments(), 'Response should not contain attachments');
     }
@@ -108,8 +108,8 @@ class SoapServerTest extends PHPUnit_Framework_TestCase
 
         file_put_contents(self::CACHE_DIR . '/SoapServerTestSwaResponseWithAttachments.xml', $response->getContent());
 
-        self::assertNotContains("\r\n", $response->getContent(), 'Response cannot contain CRLF line endings');
-        self::assertContains('dummyServiceMethodWithAttachmentsResponse', $response->getContent());
+        self::assertStringNotContainsString("\r\n", $response->getContent(), 'Response cannot contain CRLF line endings');
+        self::assertStringContainsString('dummyServiceMethodWithAttachmentsResponse', $response->getContent());
         self::assertSame('DummyService.dummyServiceMethodWithAttachments', $response->getAction());
         self::assertTrue($response->hasAttachments(), 'Response should contain attachments');
         self::assertCount(2, $response->getAttachments());
@@ -137,8 +137,8 @@ class SoapServerTest extends PHPUnit_Framework_TestCase
 
         file_put_contents(self::CACHE_DIR . '/SoapServerTestSwaResponseWithAttachmentsAndLowerCaseHeaders.xml', $response->getContent());
 
-        self::assertNotContains("\r\n", $response->getContent(), 'Response cannot contain CRLF line endings');
-        self::assertContains('dummyServiceMethodWithAttachmentsResponse', $response->getContent());
+        self::assertStringNotContainsString("\r\n", $response->getContent(), 'Response cannot contain CRLF line endings');
+        self::assertStringContainsString('dummyServiceMethodWithAttachmentsResponse', $response->getContent());
         self::assertSame('DummyService.dummyServiceMethodWithAttachments', $response->getAction());
         self::assertTrue($response->hasAttachments(), 'Response should contain attachments');
         self::assertCount(2, $response->getAttachments());

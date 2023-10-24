@@ -30,11 +30,11 @@ class Parser
      *
      * @param string $mimeMessage Mime message string
      * @param string[] $headers array(string=>string) of header elements (e.g. coming from http request)
-     * @return MultiPart
+     * @return MultiAbstractPart
      */
-    public static function parseMimeMessage($mimeMessage, array $headers = [])
+    public static function parseMimeMessage($mimeMessage, array $headers =[])
     {
-        $multiPart = new MultiPart();
+        $multiPart = new MultiAbstractPart();
         $mimeMessageLines = explode("\n", $mimeMessage);
         $mimeMessageLineCount = count($mimeMessageLines);
 
@@ -86,7 +86,7 @@ class Parser
                 $multiPart
             );
         } else {
-            self::appendSingleMainPartToMultiPart(new Part($mimeMessage), $multiPart);
+            self::appendSingleMainPartToMultiPart(new AbstractPart($mimeMessage), $multiPart);
         }
 
         return $multiPart;
@@ -94,9 +94,9 @@ class Parser
 
     /**
      * @param ParsedPartList $parsedPartList
-     * @param MultiPart $multiPart
+     * @param MultiAbstractPart $multiPart
      */
-    private static function appendPartsToMultiPart(ParsedPartList $parsedPartList, MultiPart $multiPart)
+    private static function appendPartsToMultiPart(ParsedPartList $parsedPartList, MultiAbstractPart $multiPart)
     {
         foreach ($parsedPartList->getParts() as $parsedPart) {
             $multiPart->addPart(
@@ -106,12 +106,12 @@ class Parser
         }
     }
 
-    private static function appendSingleMainPartToMultiPart(Part $part, MultiPart $multiPart)
+    private static function appendSingleMainPartToMultiPart(AbstractPart $part, MultiAbstractPart $multiPart)
     {
         $multiPart->addPart($part, true);
     }
 
-    private static function setMultiPartHeaders(MultiPart $multiPart, $headers)
+    private static function setMultiPartHeaders(MultiAbstractPart $multiPart, $headers)
     {
         foreach ($headers as $name => $value) {
             if ($name === 'Content-Type') {

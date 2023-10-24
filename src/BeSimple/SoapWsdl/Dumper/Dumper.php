@@ -54,7 +54,7 @@ class Dumper
     protected $domService;
     protected $domPortType;
 
-    public function __construct(Definition $definition, array $options = array())
+    public function __construct(Definition $definition, array $options =array())
     {
         $this->definition = $definition;
         $this->document = new \DOMDocument('1.0', 'utf-8');

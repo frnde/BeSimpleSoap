@@ -14,7 +14,7 @@ namespace BeSimple\SoapClient;
 
 use BeSimple\SoapBundle\Soap\SoapAttachment;
 use BeSimple\SoapCommon\Mime\PartFactory;
-use BeSimple\SoapCommon\SoapRequest;
+use BeSimple\SoapCommon\AbstractSoapRequest;
 
 /**
  * SoapResponseFactory for SoapClient. Provides factory function for SoapResponse object.
@@ -27,17 +27,17 @@ class SoapResponseFactory
     /**
      * Factory method for SoapClient\SoapResponse.
      *
-     * @param SoapRequest               $soapRequest    related request object
+     * @param AbstractSoapRequest               $soapRequest    related request object
      * @param string                    $content        Content
      * @param string                    $contentType    Content type header
      * @param SoapAttachment[]          $attachments    SOAP attachments
      * @return SoapResponse
      */
     public static function create(
-        SoapRequest $soapRequest,
+        AbstractSoapRequest $soapRequest,
         $content,
         $contentType,
-        array $attachments = []
+        array $attachments =[]
     ) {
         $response = new SoapResponse();
         $response->setRequest($soapRequest);
@@ -58,7 +58,7 @@ class SoapResponseFactory
     /**
      * Factory method for SoapClient\SoapResponse with SoapResponseTracingData.
      *
-     * @param SoapRequest               $soapRequest    related request object
+     * @param AbstractSoapRequest               $soapRequest    related request object
      * @param string                    $content        Content
      * @param string                    $contentType    Content type header
      * @param SoapResponseTracingData   $tracingData    Data value object suitable for tracing SOAP traffic
@@ -66,11 +66,11 @@ class SoapResponseFactory
      * @return SoapResponse
      */
     public static function createWithTracingData(
-        SoapRequest $soapRequest,
+        AbstractSoapRequest $soapRequest,
         $content,
         $contentType,
         SoapResponseTracingData $tracingData,
-        array $attachments = []
+        array $attachments =[]
     ) {
         $response = new SoapResponse();
         $response->setRequest($soapRequest);

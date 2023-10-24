@@ -21,7 +21,7 @@ class CurlResponse
         $curlStatus,
         $responseHeader,
         $responseBody,
-        $curlErrorMessage = null
+        $curlErrorMessage =null
     ) {
         $this->httpRequestHeaders = $httpRequestHeaders;
         $this->httpResponseStatusCode = $httpResponseStatusCode;

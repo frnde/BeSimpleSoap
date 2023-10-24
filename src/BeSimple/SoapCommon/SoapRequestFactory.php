@@ -12,16 +12,16 @@ class SoapRequestFactory
      * @param  string            $version        SOAP version
      * @param  string            $contentType    Content Type
      * @param  string            $content        Content
-     * @return SoapRequest
+     * @return AbstractSoapRequest
      */
     public static function createWithContentType(
         $location,
         $action,
         $version,
         $contentType,
-        $content = null
+        $content =null
     ) {
-        $request = new SoapRequest();
+        $request = new AbstractSoapRequest();
         $request->setContent($content);
         $request->setLocation($location);
         $request->setAction($action);
@@ -38,20 +38,20 @@ class SoapRequestFactory
      * @param  string            $action         SOAP action
      * @param  int               $version        SOAP version
      * @param  string            $content        Content
-     * @return SoapRequest
+     * @return AbstractSoapRequest
      */
     public static function create(
         $location,
         $action,
         $version,
-        $content = null
+        $content =null
     ) {
 
         return self::createWithContentType(
             $location,
             $action,
             $version,
-            SoapRequest::getContentTypeForVersion($version),
+            AbstractSoapRequest::getContentTypeForVersion($version),
             $content
         );
     }

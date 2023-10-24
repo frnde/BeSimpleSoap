@@ -16,7 +16,7 @@ use BeSimple\SoapBundle\Soap\SoapAttachment;
 use BeSimple\SoapCommon\AttachmentsHandlerInterface;
 use BeSimple\SoapCommon\SoapKernel;
 use BeSimple\SoapCommon\SoapOptions\SoapOptions;
-use BeSimple\SoapCommon\SoapRequest;
+use BeSimple\SoapCommon\AbstractSoapRequest;
 use BeSimple\SoapCommon\SoapRequestFactory;
 use BeSimple\SoapCommon\Storage\RequestHandlerAttachmentsStorage;
 use BeSimple\SoapServer\SoapOptions\SoapServerOptions;
@@ -65,9 +65,8 @@ class SoapServer extends \SoapServer
      *
      * @deprecated
      * @param string $request Request string
-     * @return string
      */
-    public function handle($request = null)
+    public function handle($request =null): void
     {
         throw new Exception(
             'The handle method is now deprecated, because it accesses $_SERVER, $_POST. Use handleRequest instead'
@@ -81,9 +80,9 @@ class SoapServer extends \SoapServer
      * @param string $soapAction
      * @param string $requestContentType
      * @param string $requestContent = null
-     * @return SoapRequest
+     * @return AbstractSoapRequest
      */
-    public function createRequest($requestUrl, $soapAction, $requestContentType, $requestContent = null)
+    public function createRequest($requestUrl, $soapAction, $requestContentType, $requestContent =null): AbstractSoapRequest
     {
         $soapRequest = SoapRequestFactory::createWithContentType(
             $requestUrl,
@@ -103,21 +102,18 @@ class SoapServer extends \SoapServer
         return $soapRequest;
     }
 
-    public function handleRequest(SoapRequest $soapRequest)
+    public function handleRequest(AbstractSoapRequest $soapRequest)
     {
         try {
-
             return $this->handleSoapRequest($soapRequest);
-
         } catch (\SoapFault $fault) {
-
             $this->fault($fault->faultcode, $fault->faultstring, $fault->faultactor, $fault->detail);
 
             return self::SOAP_SERVER_REQUEST_FAILED;
         }
     }
 
-    public function handleWsdlRequest(SoapRequest $soapRequest)
+    public function handleWsdlRequest(AbstractSoapRequest $soapRequest): SoapResponse
     {
         ob_start();
         parent::handle();
@@ -136,11 +132,11 @@ class SoapServer extends \SoapServer
      * necessary functions (through the parent's class handle()) and runs the
      * response filters.
      *
-     * @param SoapRequest $soapRequest SOAP request object
+     * @param AbstractSoapRequest $soapRequest SOAP request object
      *
      * @return SoapResponse
      */
-    private function handleSoapRequest(SoapRequest $soapRequest)
+    private function handleSoapRequest(AbstractSoapRequest $soapRequest): SoapResponse
     {
         /** @var AttachmentsHandlerInterface $handler */
         $handler = $this->soapServerOptions->getHandler();
@@ -179,8 +175,13 @@ class SoapServer extends \SoapServer
      * @param SoapAttachment[] $attachments
      * @return SoapResponse
      */
-    private function createResponse($requestLocation, $soapAction, $soapVersion, $responseContent = null, array $attachments = [])
-    {
+    private function createResponse(
+        $requestLocation,
+        $soapAction,
+        $soapVersion,
+        $responseContent =null,
+        array $attachments =[]
+    ): SoapResponse {
         $soapResponse = SoapResponseFactory::create(
             $responseContent,
             $requestLocation,
@@ -199,7 +200,7 @@ class SoapServer extends \SoapServer
         return $soapResponse;
     }
 
-    private function injectAttachmentStorage(AttachmentsHandlerInterface $handler, SoapRequest $soapRequest)
+    private function injectAttachmentStorage(AttachmentsHandlerInterface $handler, AbstractSoapRequest $soapRequest): void
     {
         $attachments = [];
         if ($soapRequest->hasAttachments()) {
@@ -226,7 +227,7 @@ class SoapServer extends \SoapServer
      * @param SoapOptions $soapOptions
      * @return SoapOptions
      */
-    private function configureTypeConverters(SoapOptions $soapOptions)
+    private function configureTypeConverters(SoapOptions $soapOptions): SoapOptions
     {
         if ($soapOptions->getAttachmentType() !== SoapOptions::SOAP_ATTACHMENTS_TYPE_BASE64) {
             if ($soapOptions->getAttachmentType() === SoapOptions::SOAP_ATTACHMENTS_TYPE_SWA) {
@@ -234,27 +235,29 @@ class SoapServer extends \SoapServer
             } elseif ($soapOptions->getAttachmentType() === SoapOptions::SOAP_ATTACHMENTS_TYPE_MTOM) {
                 $soapOptions->getTypeConverterCollection()->add(new MtomTypeConverter());
             } else {
-                throw new InvalidArgumentException('Unresolved SOAP_ATTACHMENTS_TYPE: ' . $soapOptions->getAttachmentType());
+                throw new InvalidArgumentException(
+                    'Unresolved SOAP_ATTACHMENTS_TYPE: ' . $soapOptions->getAttachmentType()
+                );
             }
         }
 
         return $soapOptions;
     }
 
-    private function getAttachmentFilters()
+    private function getAttachmentFilters(): array
     {
         $filters = [];
         if ($this->soapOptions->getAttachmentType() !== SoapOptions::SOAP_ATTACHMENTS_TYPE_BASE64) {
-            $filters[] = new MimeFilter();
+            $filters[] = new MimeFilterInterfaceInterface();
         }
         if ($this->soapOptions->getAttachmentType() === SoapOptions::SOAP_ATTACHMENTS_TYPE_MTOM) {
-            $filters[] = new XmlMimeFilter();
+            $filters[] = new XmlMimeFilterInterface();
         }
 
         return $filters;
     }
 
-    private function validateSoapConfigs(SoapServerOptions $soapServerOptions, SoapOptions $soapOptions)
+    private function validateSoapConfigs(SoapServerOptions $soapServerOptions, SoapOptions $soapOptions): void
     {
         if ($soapOptions->hasAttachments()) {
             if (!$soapServerOptions->getHandlerInstance() instanceof AttachmentsHandlerInterface) {

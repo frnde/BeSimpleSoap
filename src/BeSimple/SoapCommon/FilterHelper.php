@@ -53,7 +53,7 @@ class FilterHelper
      *
      * @return void
      */
-    public function addHeaderElement(\DOMElement $node, $mustUnderstand = null, $actor = null, $soapVersion = SOAP_1_1)
+    public function addHeaderElement(\DOMElement $node, $mustUnderstand =null, $actor =null, $soapVersion =SOAP_1_1)
     {
         $root = $this->domDocument->documentElement;
         $namespace = $root->namespaceURI;
@@ -134,7 +134,7 @@ class FilterHelper
      *
      * @return \DOMElement
      */
-    public function createElement($namespaceURI, $name, $value = null)
+    public function createElement($namespaceURI, $name, $value =null)
     {
         $prefix = $this->namespaces[$namespaceURI];
 

@@ -27,7 +27,7 @@ class Cache
     const TYPE_MEMORY      = WSDL_CACHE_MEMORY;
     const TYPE_DISK_MEMORY = WSDL_CACHE_BOTH;
 
-    static protected $types = [
+    protected static $types = [
         self::TYPE_NONE,
         self::TYPE_DISK,
         self::TYPE_MEMORY,

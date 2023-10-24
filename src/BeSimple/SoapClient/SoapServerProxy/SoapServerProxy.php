@@ -21,7 +21,7 @@ class SoapServerProxy
      * @param string $password = null
      * @param int $authenticationType = null|SoapServerProxy::PROXY_AUTHENTICATION_TYPE_BASIC|SoapServerProxy::PROXY_AUTHENTICATION_TYPE_NTLM
      */
-    public function __construct($host, $port, $login = null, $password = null, $authenticationType = null)
+    public function __construct($host, $port, $login =null, $password =null, $authenticationType =null)
     {
         $this->host = $host;
         $this->port = $port;

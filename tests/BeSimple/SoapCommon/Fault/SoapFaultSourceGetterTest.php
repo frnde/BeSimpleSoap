@@ -2,10 +2,10 @@
 
 namespace BeSimple\SoapCommon\Fault;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use SoapFault;
 
-class SoapFaultSourceGetterTest extends PHPUnit_Framework_TestCase
+class SoapFaultSourceGetterTest extends TestCase
 {
     const FIXTURES_DIR = __DIR__ . '/../../Fixtures';
 
@@ -29,15 +29,15 @@ class SoapFaultSourceGetterTest extends PHPUnit_Framework_TestCase
         self::assertTrue(SoapFaultSourceGetter::isBeSimpleSoapFault($soapFault));
     }
 
-    public function provideNativeSoapFaults()
+    public static function provideNativeSoapFaults()
     {
         return [
-            [$this->getNativeSoapFaultFromClient()],
+            [self::getNativeSoapFaultFromClient()],
             // @todo: add more test cases for Soap Server \SoapFault
         ];
     }
 
-    public function provideBeSimpleSoapFaults()
+    public static function provideBeSimpleSoapFaults()
     {
         return [
             [new SoapFault(SoapFaultEnum::SOAP_FAULT_HTTP, 'HTTP Connection error')],
@@ -49,7 +49,7 @@ class SoapFaultSourceGetterTest extends PHPUnit_Framework_TestCase
     /**
      * @return SoapFault
      */
-    private function getNativeSoapFaultFromClient()
+    private static function getNativeSoapFaultFromClient()
     {
         try {
             $soapClient = @new \SoapClient('non-existing-wsdl-throwing-soapfault');

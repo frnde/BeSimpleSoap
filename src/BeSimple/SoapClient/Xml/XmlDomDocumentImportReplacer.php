@@ -22,7 +22,7 @@ class XmlDomDocumentImportReplacer
         $schemaPrefix,
         $schemaUrl,
         $locationAttributeName,
-        $parentFilePath = null
+        $parentFilePath =null
     ) {
         $xpath->registerNamespace($schemaPrefix, $schemaUrl);
         $nodes = $xpath->query('.//'.$schemaPrefix.':include | .//'.$schemaPrefix.':import');

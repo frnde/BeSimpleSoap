@@ -38,7 +38,7 @@ class Message
         return $this->parts;
     }
 
-    public function get($name, $default = null)
+    public function get($name, $default =null)
     {
         return isset($this->parts[$name]) ? $this->parts[$name] : $default;
     }
@@ -48,7 +48,7 @@ class Message
         return 0 === count($this->parts) ? true : false;
     }
 
-    public function add($name, $phpType, $nillable = false)
+    public function add($name, $phpType, $nillable =false)
     {
         if ($phpType instanceof TypeInterface) {
             $phpType = $phpType->getPhpType();

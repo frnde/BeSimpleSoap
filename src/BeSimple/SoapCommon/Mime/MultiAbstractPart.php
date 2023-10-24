@@ -27,7 +27,7 @@ use BeSimple\SoapCommon\Helper;
  *
  * @author Andreas Schamberger <mail@andreass.net>
  */
-class MultiPart extends PartHeader
+class MultiAbstractPart extends AbstractPartHeader
 {
     /**
      * Content-ID of main part.
@@ -37,14 +37,14 @@ class MultiPart extends PartHeader
 
     /**
      * Mime parts.
-     * @var \BeSimple\SoapCommon\Mime\Part[]
+     * @var \BeSimple\SoapCommon\Mime\AbstractPart[]
      */
     protected $parts;
 
     /**
      * @param string $boundary
      */
-    public function __construct($boundary = null)
+    public function __construct($boundary =null)
     {
         $this->setHeader('MIME-Version', '1.0');
         $this->setHeader('Content-Type', 'multipart/related');
@@ -61,7 +61,7 @@ class MultiPart extends PartHeader
      * @param boolean $withHeaders Returned mime message contains headers
      * @return string
      */
-    public function getMimeMessage($withHeaders = false)
+    public function getMimeMessage($withHeaders =false)
     {
         $message = ($withHeaders === true) ? $this->generateHeaders() : "";
         // add parts
@@ -77,12 +77,12 @@ class MultiPart extends PartHeader
     /**
      * Add new part to MIME message.
      *
-     * @param \BeSimple\SoapCommon\Mime\Part $part   Part that is added
+     * @param \BeSimple\SoapCommon\Mime\AbstractPart $part   Part that is added
      * @param boolean                        $isMain Is the given part the main part of mime message
      *
      * @return void
      */
-    public function addPart(Part $part, $isMain = false)
+    public function addPart(AbstractPart $part, $isMain =false)
     {
         $contentId = trim($part->getHeader('Content-ID'), '<>');
         if ($isMain === true) {
@@ -99,7 +99,7 @@ class MultiPart extends PartHeader
      *
      * @param string $contentId Content id of desired part
      *
-     * @return \BeSimple\SoapCommon\Mime\Part
+     * @return \BeSimple\SoapCommon\Mime\AbstractPart
      */
     public function getPart($contentId)
     {
@@ -113,7 +113,7 @@ class MultiPart extends PartHeader
     /**
      * Get main part.
      *
-     * @return \BeSimple\SoapCommon\Mime\Part
+     * @return \BeSimple\SoapCommon\Mime\AbstractPart
      */
     public function getMainPart()
     {
@@ -129,7 +129,7 @@ class MultiPart extends PartHeader
     /**
      * Get attachment parts.
      *
-     * @return \BeSimple\SoapCommon\Mime\Part[]
+     * @return \BeSimple\SoapCommon\Mime\AbstractPart[]
      */
     public function getAttachments()
     {

@@ -14,15 +14,15 @@ namespace BeSimple\SoapServer;
 
 use BeSimple\SoapCommon\FilterHelper;
 use BeSimple\SoapCommon\Helper;
-use BeSimple\SoapCommon\SoapResponse;
-use BeSimple\SoapCommon\SoapResponseFilter;
+use BeSimple\SoapCommon\AbstractSoapResponse;
+use BeSimple\SoapCommon\SoapResponseFilterInterface;
 
 /**
  * XML MIME filter that fixes the namespace of xmime:contentType attribute.
  *
  * @author Andreas Schamberger <mail@andreass.net>
  */
-class XmlMimeFilter implements SoapResponseFilter
+class XmlMimeFilterInterface implements SoapResponseFilterInterface
 {
     /**
      * Reset all properties to default values.
@@ -31,7 +31,7 @@ class XmlMimeFilter implements SoapResponseFilter
     {
     }
 
-    public function filterResponse(SoapResponse $response, $attachmentType)
+    public function filterResponse(AbstractSoapResponse $response, $attachmentType)
     {
         $dom = $response->getContentDocument();
 

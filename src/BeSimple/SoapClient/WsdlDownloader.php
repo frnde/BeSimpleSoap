@@ -44,7 +44,7 @@ class WsdlDownloader
      * @param boolean $resolveRemoteIncludes
      * @return string
      */
-    public function getWsdlPath(Curl $curl, $wsdlPath, $wsdCacheType, $resolveRemoteIncludes = true)
+    public function getWsdlPath(Curl $curl, $wsdlPath, $wsdCacheType, $resolveRemoteIncludes =true)
     {
         $isRemoteFile = RemoteFileResolver::instantiateResolver()->isRemoteFile($wsdlPath);
         $isCacheEnabled = $wsdCacheType === Cache::TYPE_NONE ? false : Cache::isEnabled();

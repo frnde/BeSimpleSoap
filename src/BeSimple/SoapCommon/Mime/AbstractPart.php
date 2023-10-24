@@ -26,7 +26,7 @@ use BeSimple\SoapCommon\Helper;
  *
  * @author Andreas Schamberger <mail@andreass.net>
  */
-class Part extends PartHeader
+class AbstractPart extends AbstractPartHeader
 {
     const ENCODING_BASE64 = 'base64';
     const ENCODING_BINARY = 'binary';
@@ -50,11 +50,11 @@ class Part extends PartHeader
      * @param string $contentId   Content id
      */
     public function __construct(
-        $content = null,
-        $contentType = self::CONTENT_TYPE_STREAM,
-        $charset = self::CHARSET_UTF8,
-        $encoding = self::ENCODING_BINARY,
-        $contentId = null
+        $content =null,
+        $contentType =self::CONTENT_TYPE_STREAM,
+        $charset =self::CHARSET_UTF8,
+        $encoding =self::ENCODING_BINARY,
+        $contentId =null
     ) {
         $this->content = $content;
 

@@ -27,7 +27,7 @@ class Definition
     protected $options;
     protected $methods;
 
-    public function __construct($name, $namespace, TypeRepository $typeRepository, array $options = array())
+    public function __construct($name, $namespace, TypeRepository $typeRepository, array $options =array())
     {
         $this->name = $name;
         $this->namespace = $namespace;
@@ -119,7 +119,7 @@ class Definition
         return $messages;
     }
 
-    public function getMethod($name, $default = null)
+    public function getMethod($name, $default =null)
     {
         return isset($this->methods[$name]) ? $this->methods[$name] : $default;
     }

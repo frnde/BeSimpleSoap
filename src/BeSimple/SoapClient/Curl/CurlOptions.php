@@ -39,10 +39,10 @@ class CurlOptions
         $followLocationMaxRedirects,
         $soapCompression,
         $connectionTimeout,
-        SoapServerProxy $proxy = null,
-        HttpAuthenticationInterface $httpAuthentication = null,
-        SslCertificateOptions $sslCertificateOptions = null,
-        $sslVersion = null
+        SoapServerProxy $proxy =null,
+        HttpAuthenticationInterface $httpAuthentication =null,
+        SslCertificateOptions $sslCertificateOptions =null,
+        $sslVersion =null
     ) {
         $this->userAgent = $userAgent;
         $this->followLocationMaxRedirects = $followLocationMaxRedirects;

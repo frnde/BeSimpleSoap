@@ -20,7 +20,7 @@ class ClassMap
     protected $classMap;
     protected $inverseClassMap;
 
-    public function __construct(array $classMap = [])
+    public function __construct(array $classMap =[])
     {
         $this->classmap = [];
         foreach ($classMap as $type => $className) {

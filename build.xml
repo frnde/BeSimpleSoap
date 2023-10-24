@@ -6,6 +6,7 @@
         <include name="**/*.php"/>
         <exclude name="BeSimple/SoapBundle/**/*.php"/>
         <exclude name="BeSimple/SoapCommon/Type/**/*.php"/>
+        <exclude name="vendor"/>
     </fileset>
 
     <fileset id="tests" dir="${project.basedir}/tests">
@@ -42,7 +43,7 @@
     </target>
 
     <target name="phpstan" depends="prepare" description="phpstan checks">
-        <exec command="php vendor/bin/phpstan analyse src/BeSimple/SoapClient src/BeSimple/SoapServer > cache/phpstan-output.txt" passthru="true" checkreturn="true"/>
+        <exec command="php vendor/bin/phpstan analyse --memory-limit=1G src/BeSimple/SoapClient src/BeSimple/SoapServer > cache/phpstan-output.txt" passthru="true" checkreturn="true"/>
     </target>
 
     <target name="phpUnitTests" description="Run unit tests">

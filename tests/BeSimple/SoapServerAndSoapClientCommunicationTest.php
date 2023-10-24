@@ -11,17 +11,17 @@ use BeSimple\SoapClient\SoapOptions\SoapClientOptions;
 use BeSimple\SoapCommon\ClassMap;
 use BeSimple\SoapCommon\SoapOptions\SoapOptions;
 use BeSimple\SoapCommon\SoapOptionsBuilder;
-use BeSimple\SoapCommon\SoapRequest;
+use BeSimple\SoapCommon\AbstractSoapRequest;
 use BeSimple\SoapServer\SoapServerBuilder;
 use BeSimple\SoapServer\SoapServerOptionsBuilder;
 use Fixtures\DummyService;
 use Fixtures\DummyServiceMethodWithIncomingLargeSwaRequest;
 use Fixtures\DummyServiceMethodWithOutgoingLargeSwaRequest;
 use Fixtures\GenerateTestRequest;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use SoapHeader;
 
-class SoapServerAndSoapClientCommunicationTest extends PHPUnit_Framework_TestCase
+class SoapServerAndSoapClientCommunicationTest extends TestCase
 {
     const CACHE_DIR = __DIR__ . '/../../cache';
     const FIXTURES_DIR = __DIR__ . '/../Fixtures';
@@ -31,12 +31,12 @@ class SoapServerAndSoapClientCommunicationTest extends PHPUnit_Framework_TestCas
 
     private $localWebServerProcess;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->localWebServerProcess = popen('php -S localhost:8000 > /dev/null 2>&1 &', 'r');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         pclose($this->localWebServerProcess);
     }
@@ -68,13 +68,13 @@ class SoapServerAndSoapClientCommunicationTest extends PHPUnit_Framework_TestCas
                 $fileName = preg_replace('/\<|\>/', '', $attachment->getContentId());
                 file_put_contents(self::CACHE_DIR . DIRECTORY_SEPARATOR . 'attachment-server-response-' . $fileName, $attachment->getContent());
 
-                self::assertRegExp('/filename\.(docx|html|txt)/', $fileName);
+                self::assertMatchesRegularExpression('/filename\.(docx|html|txt)/', $fileName);
             }
         } else {
             self::fail('Response should contain attachments');
         }
 
-        self::assertContains('dummyServiceMethodWithOutgoingLargeSwaResponse', $response->getContent());
+        self::assertStringContainsString('dummyServiceMethodWithOutgoingLargeSwaResponse', $response->getContent());
         self::assertSame('DummyService.dummyServiceMethodWithOutgoingLargeSwa', $response->getAction());
 
         self::assertEquals(
@@ -108,11 +108,11 @@ class SoapServerAndSoapClientCommunicationTest extends PHPUnit_Framework_TestCas
         $soapResponse = $soapClient->soapCall('dummyServiceMethodWithOutgoingLargeSwa', [$request]);
         $attachments = $soapResponse->getAttachments();
 
-        self::assertContains('</dummyServiceReturn>', $soapResponse->getResponseContent());
+        self::assertStringContainsString('</dummyServiceReturn>', $soapResponse->getResponseContent());
         self::assertTrue($soapResponse->hasAttachments(), 'Response should contain attachments');
         self::assertCount(3, $attachments);
         self::assertInstanceOf(
-            SoapRequest::class,
+            AbstractSoapRequest::class,
             $soapResponse->getRequest(),
             'SoapResponse::request must be SoapRequest for SoapClient calls with enabled tracing'
         );
@@ -122,7 +122,7 @@ class SoapServerAndSoapClientCommunicationTest extends PHPUnit_Framework_TestCas
             $fileName = preg_replace('/\<|\>/', '', $attachment->getContentId());
             file_put_contents(self::CACHE_DIR . DIRECTORY_SEPARATOR . 'attachment-client-response-' . $fileName, $attachment->getContent());
 
-            self::assertRegExp('/filename\.(docx|html|txt)/', $fileName);
+            self::assertMatchesRegularExpression('/filename\.(docx|html|txt)/', $fileName);
         }
 
         self::assertEquals(
@@ -162,11 +162,11 @@ class SoapServerAndSoapClientCommunicationTest extends PHPUnit_Framework_TestCas
         $soapResponse = $soapClient->soapCall('dummyServiceMethodWithOutgoingLargeSwa', [$request]);
         $attachments = $soapResponse->getAttachments();
 
-        self::assertContains('</dummyServiceReturn>', $soapResponse->getResponseContent());
+        self::assertStringContainsString('</dummyServiceReturn>', $soapResponse->getResponseContent());
         self::assertTrue($soapResponse->hasAttachments(), 'Response should contain attachments');
         self::assertCount(3, $attachments);
         self::assertInstanceOf(
-            SoapRequest::class,
+            AbstractSoapRequest::class,
             $soapResponse->getRequest(),
             'SoapResponse::request must be SoapRequest for SoapClient calls with disabled tracing'
         );
@@ -176,7 +176,7 @@ class SoapServerAndSoapClientCommunicationTest extends PHPUnit_Framework_TestCas
             $fileName = preg_replace('/\<|\>/', '', $attachment->getContentId());
             file_put_contents(self::CACHE_DIR . DIRECTORY_SEPARATOR . 'attachment-client-response-' . $fileName, $attachment->getContent());
 
-            self::assertRegExp('/filename\.(docx|html|txt)/', $fileName);
+            self::assertMatchesRegularExpression('/filename\.(docx|html|txt)/', $fileName);
         }
 
         self::assertEquals(
@@ -222,11 +222,11 @@ class SoapServerAndSoapClientCommunicationTest extends PHPUnit_Framework_TestCas
                 ]
             );
 
-            self::assertContains('dummyServiceMethodWithIncomingLargeSwa', $soapResponse->getRequest()->getContent());
-            self::assertContains('</dummyServiceReturn>', $soapResponse->getResponseContent());
+            self::assertStringContainsString('dummyServiceMethodWithIncomingLargeSwa', $soapResponse->getRequest()->getContent());
+            self::assertStringContainsString('</dummyServiceReturn>', $soapResponse->getResponseContent());
             self::assertTrue($soapResponse->getRequest()->hasAttachments(), 'Response MUST contain attachments');
             self::assertFalse($soapResponse->hasAttachments(), 'Response MUST NOT contain attachments');
-            self::assertInstanceOf(SoapRequest::class, $soapResponse->getRequest());
+            self::assertInstanceOf(AbstractSoapRequest::class, $soapResponse->getRequest());
 
             foreach ($soapResponse->getRequest()->getAttachments() as $attachment) {
                 file_put_contents(self::CACHE_DIR . '/attachment-client-request-'.trim($attachment->getContentId(), '<>'), $attachment->getContent());
@@ -275,7 +275,7 @@ class SoapServerAndSoapClientCommunicationTest extends PHPUnit_Framework_TestCas
         );
         $response = $soapServer->handleRequest($request);
 
-        self::assertContains('dummyServiceMethodWithIncomingLargeSwaResponse', $response->getContent());
+        self::assertStringContainsString('dummyServiceMethodWithIncomingLargeSwaResponse', $response->getContent());
         self::assertSame('DummyService.dummyServiceMethodWithIncomingLargeSwa', $response->getAction());
         self::assertEquals(
             filesize(self::LARGE_SWA_FILE),
@@ -307,7 +307,7 @@ class SoapServerAndSoapClientCommunicationTest extends PHPUnit_Framework_TestCas
         );
         $response = $soapServer->handleRequest($request);
 
-        self::assertContains('dummyServiceMethodWithIncomingLargeSwaResponse', $response->getContent());
+        self::assertStringContainsString('dummyServiceMethodWithIncomingLargeSwaResponse', $response->getContent());
         self::assertSame('DummyService.dummyServiceMethodWithIncomingLargeSwa', $response->getAction());
         self::assertEquals(
             filesize(self::LARGE_SWA_FILE),

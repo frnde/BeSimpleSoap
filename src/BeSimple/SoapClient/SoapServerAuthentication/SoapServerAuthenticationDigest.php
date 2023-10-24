@@ -11,7 +11,7 @@ class SoapServerAuthenticationDigest implements SoapServerAuthenticationInterfac
      * @param string $localCert
      * @param string $passPhrase = null
      */
-    public function __construct($localCert, $passPhrase = null)
+    public function __construct($localCert, $passPhrase =null)
     {
         $this->localCert = $localCert;
         $this->passPhrase = $passPhrase;

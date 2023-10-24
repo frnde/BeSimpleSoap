@@ -24,7 +24,14 @@ trait SoapClientNativeMethodsTrait
      * @param array|null $outputHeaders
      * @return SoapResponse
      */
-    abstract public function soapCall($functionName, array $arguments, array $soapAttachments = [], array $options = null, $inputHeaders = null, array &$outputHeaders = null);
+    abstract public function soapCall(
+        string $functionName,
+        array $arguments,
+        array $soapAttachments =[],
+        array $options =null,
+        $inputHeaders =null,
+        array &$outputHeaders =null
+    ): SoapResponse;
 
     /**
      * @param mixed $request Request object
@@ -34,27 +41,33 @@ trait SoapClientNativeMethodsTrait
      * @param SoapAttachment[] $soapAttachments SOAP attachments array
      * @return SoapResponse
      */
-    abstract protected function performSoapRequest($request, $location, $action, $version, array $soapAttachments = []);
+    abstract protected function performSoapRequest(
+        $request,
+        $location,
+        $action,
+        $version,
+        array $soapAttachments =[]
+    ): SoapResponse;
 
     /**
      * @return SoapClientOptions
      */
-    abstract protected function getSoapClientOptions();
+    abstract protected function getSoapClientOptions(): SoapClientOptions;
 
     /**
      * @return SoapOptions
      */
-    abstract protected function getSoapOptions();
+    abstract protected function getSoapOptions(): SoapOptions;
 
     /**
      * Avoid using __call directly, it's deprecated even in \SoapClient.
      *
      * @deprecated
      */
-    public function __call($function_name, $arguments)
+    public function __call($function_name, $arguments): mixed
     {
         throw new Exception(
-            'The __call method is deprecated. Use __soapCall/soapCall  instead.'
+            message: 'The __call method is deprecated. Use __soapCall/soapCall  instead.'
         );
     }
 
@@ -68,9 +81,20 @@ trait SoapClientNativeMethodsTrait
      * @param array|null $output_headers
      * @return string
      */
-    public function __soapCall($function_name, $arguments, $options = null, $input_headers = null, &$output_headers = null)
-    {
-        return $this->soapCall($function_name, $arguments, $options, $input_headers, $output_headers)->getResponseContent();
+    public function __soapCall(
+        $function_name,
+        $arguments,
+        $options =null,
+        $input_headers =null,
+        &$output_headers =null
+    ): string {
+        return $this->soapCall(
+            $function_name,
+            $arguments,
+            $options,
+            $input_headers,
+            $output_headers
+        )->getResponseContent();
     }
 
     /**
@@ -84,7 +108,7 @@ trait SoapClientNativeMethodsTrait
      *
      * @return string
      */
-    public function __doRequest($request, $location, $action, $version, $oneWay = 0)
+    public function __doRequest($request, $location, $action, $version, $oneWay =0): string
     {
         $soapResponse = $this->performSoapRequest(
             $request,
@@ -93,59 +117,64 @@ trait SoapClientNativeMethodsTrait
             $version,
             $this->getSoapAttachmentsOnRequestFromStorage()
         );
+
         $this->setSoapResponseToStorage($soapResponse);
 
         return $soapResponse->getResponseContent();
     }
 
     /** @deprecated */
-    public function __getLastRequestHeaders()
+    public function __getLastRequestHeaders(): ?string
     {
         $this->checkTracing();
 
         throw new Exception(
-            'The __getLastRequestHeaders method is now deprecated. Use callSoapRequest instead and get the tracing information from SoapResponseTracingData.'
+            message: 'The __getLastRequestHeaders method is now deprecated. ' .
+            'Use callSoapRequest instead and get the tracing information from SoapResponseTracingData.'
         );
     }
 
     /** @deprecated */
-    public function __getLastRequest()
+    public function __getLastRequest(): ?string
     {
         $this->checkTracing();
 
         throw new Exception(
-            'The __getLastRequest method is now deprecated. Use callSoapRequest instead and get the tracing information from SoapResponseTracingData.'
+            message: 'The __getLastRequest method is now deprecated. ' .
+            'Use callSoapRequest instead and get the tracing information from SoapResponseTracingData.'
         );
     }
 
     /** @deprecated */
-    public function __getLastResponseHeaders()
+    public function __getLastResponseHeaders(): ?string
     {
         $this->checkTracing();
 
         throw new Exception(
-            'The __getLastResponseHeaders method is now deprecated. Use callSoapRequest instead and get the tracing information from SoapResponseTracingData.'
+            message: 'The __getLastResponseHeaders method is now deprecated. ' .
+            'Use callSoapRequest instead and get the tracing information from SoapResponseTracingData.'
         );
     }
 
     /** @deprecated */
-    public function __getLastResponse()
+    public function __getLastResponse(): ?string
     {
         $this->checkTracing();
 
         throw new Exception(
-            'The __getLastResponse method is now deprecated. Use callSoapRequest instead and get the tracing information from SoapResponseTracingData.'
+            message: 'The __getLastResponse method is now deprecated. ' .
+            'Use callSoapRequest instead and get the tracing information from SoapResponseTracingData.'
         );
     }
 
-    private function checkTracing()
+    private function checkTracing(): void
     {
         if ($this->getSoapClientOptions()->getTrace() === false) {
-            throw new Exception('SoapClientOptions tracing disabled, turn on trace attribute');
+            throw new Exception(message: 'SoapClientOptions tracing disabled, turn on trace attribute');
         }
     }
 
-    private function setSoapResponseToStorage(SoapResponse $soapResponseStorage)
+    private function setSoapResponseToStorage(SoapResponse $soapResponseStorage): void
     {
         $this->soapResponseStorage = $soapResponseStorage;
     }
@@ -153,12 +182,12 @@ trait SoapClientNativeMethodsTrait
     /**
      * @param SoapAttachment[] $soapAttachments
      */
-    private function setSoapAttachmentsOnRequestToStorage(array $soapAttachments)
+    private function setSoapAttachmentsOnRequestToStorage(array $soapAttachments): void
     {
         $this->soapAttachmentsOnRequestStorage = $soapAttachments;
     }
 
-    private function getSoapAttachmentsOnRequestFromStorage()
+    private function getSoapAttachmentsOnRequestFromStorage(): array
     {
         $soapAttachmentsOnRequest = $this->soapAttachmentsOnRequestStorage;
         $this->soapAttachmentsOnRequestStorage = null;
@@ -166,7 +195,7 @@ trait SoapClientNativeMethodsTrait
         return $soapAttachmentsOnRequest;
     }
 
-    private function getSoapResponseFromStorage()
+    private function getSoapResponseFromStorage(): ?SoapResponse
     {
         $soapResponse = $this->soapResponseStorage;
         $this->soapResponseStorage = null;

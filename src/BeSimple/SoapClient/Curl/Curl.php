@@ -34,7 +34,7 @@ class Curl
      * @param array  $requestHeaders Request header strings
      * @return CurlResponse
      */
-    public function executeCurlWithCachedSession($location, $request = null, $requestHeaders = [])
+    public function executeCurlWithCachedSession($location, $request =null, $requestHeaders =[])
     {
         return $this->executeCurlSession($this->curlSession, $this->options, $location, $request, $requestHeaders);
     }
@@ -46,7 +46,7 @@ class Curl
      * @param array         $requestHeaders     Request header strings
      * @return CurlResponse
      */
-    public function executeCurl(CurlOptions $options, $location, $request = null, $requestHeaders = [])
+    public function executeCurl(CurlOptions $options, $location, $request =null, $requestHeaders =[])
     {
         $curlSession = $this->acquireNewCurlSession($options);
         $curlResponse = $this->executeCurlSession($curlSession, $options, $location, $request, $requestHeaders);
@@ -86,7 +86,7 @@ class Curl
      * @param array         $requestHeaders     Request header strings
      * @return CurlResponse
      */
-    private function executeCurlSession($curlSession, CurlOptions $options, $location, $request = null, $requestHeaders = [])
+    private function executeCurlSession($curlSession, CurlOptions $options, $location, $request =null, $requestHeaders =[])
     {
         curl_setopt($curlSession, CURLOPT_URL, $location);
         curl_setopt($curlSession, CURLOPT_HEADER, true);
@@ -198,7 +198,7 @@ class Curl
      * @return string|null
      * @throws Exception
      */
-    private function executeHttpCall($curlSession, CurlOptions $options, $executedRedirects = 0)
+    private function executeHttpCall($curlSession, CurlOptions $options, $executedRedirects =0)
     {
         if ($executedRedirects > $options->getFollowLocationMaxRedirects()) {
             throw new Exception('Cannot executeHttpCall - too many redirects: ' . $executedRedirects);

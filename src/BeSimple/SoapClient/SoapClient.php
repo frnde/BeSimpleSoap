@@ -25,13 +25,13 @@ use BeSimple\SoapCommon\Fault\SoapFaultSourceGetter;
 use BeSimple\SoapCommon\Mime\PartFactory;
 use BeSimple\SoapCommon\SoapKernel;
 use BeSimple\SoapCommon\SoapOptions\SoapOptions;
-use BeSimple\SoapCommon\SoapRequest;
+use BeSimple\SoapCommon\AbstractSoapRequest;
 use BeSimple\SoapCommon\SoapRequestFactory;
 use Exception;
 use SoapFault;
 
 /**
- * Extended SoapClient that uses a a cURL wrapper for all underlying HTTP
+ * Extended SoapClient that uses a cURL wrapper for all underlying HTTP
  * requests in order to use proper authentication for all requests. This also
  * adds NTLM support. A custom WSDL downloader resolves remote xsd:includes and
  * allows caching of all remote referenced items.
@@ -66,7 +66,7 @@ class SoapClient extends \SoapClient
         } catch (Exception $e) {
             throw new SoapFault(
                 SoapFaultEnum::SOAP_FAULT_SOAP_CLIENT_ERROR,
-                'Unable to load WsdlPath ('.$soapOptions->getWsdlFile().') with message: '.$e->getMessage().' in file: '.$e->getFile().' (line: '.$e->getLine().')'
+                'Unable to load WsdlPath (' . $soapOptions->getWsdlFile() . ') with message: ' . $e->getMessage() . ' in file: ' . $e->getFile() . ' (line: ' . $e->getLine() . ')'
             );
         }
 
@@ -82,17 +82,15 @@ class SoapClient extends \SoapClient
      * @param array|null $outputHeaders
      * @return SoapResponse
      */
-    public function soapCall($functionName, array $arguments, array $soapAttachments = [], array $options = null, $inputHeaders = null, array &$outputHeaders = null)
+    public function soapCall($functionName, array $arguments, array $soapAttachments =[], array $options =null, $inputHeaders =null, array &$outputHeaders =null): SoapResponse
     {
         $this->setSoapAttachmentsOnRequestToStorage($soapAttachments);
         try {
-
             $soapResponseAsObject = parent::__soapCall($functionName, $arguments, $options, $inputHeaders, $outputHeaders);
             $soapResponse = $this->getSoapResponseFromStorage();
             $soapResponse->setResponseObject($soapResponseAsObject);
 
             return $soapResponse;
-
         } catch (SoapFault $soapFault) {
             if (SoapFaultSourceGetter::isNativeSoapFault($soapFault)) {
                 $soapFault = $this->decorateNativeSoapFaultWithSoapResponseTracingData($soapFault);
@@ -114,19 +112,19 @@ class SoapClient extends \SoapClient
      *
      * @return SoapResponse
      */
-    protected function performSoapRequest($request, $location, $action, $version, array $soapAttachments = [])
+    protected function performSoapRequest($request, $location, $action, $version, array $soapAttachments =[]): SoapResponse
     {
         $soapRequest = $this->createSoapRequest($location, $action, $version, $request, $soapAttachments);
 
         return $this->performHttpSoapRequest($soapRequest);
     }
 
-    protected function getSoapClientOptions()
+    protected function getSoapClientOptions(): SoapClientOptions
     {
         return $this->soapClientOptions;
     }
 
-    protected function getSoapOptions()
+    protected function getSoapOptions(): SoapOptions
     {
         return $this->soapOptions;
     }
@@ -138,9 +136,9 @@ class SoapClient extends \SoapClient
      * @param string                $request            SOAP request body
      * @param SoapAttachment[]      $soapAttachments    array of SOAP attachments
      *
-     * @return SoapRequest
+     * @return AbstractSoapRequest
      */
-    private function createSoapRequest($location, $action, $version, $request, array $soapAttachments = [])
+    private function createSoapRequest($location, $action, $version, $request, array $soapAttachments =[])
     {
         $soapAttachmentList = new SoapAttachmentList($soapAttachments);
         $soapRequest = SoapRequestFactory::create($location, $action, $version, $request);
@@ -154,7 +152,7 @@ class SoapClient extends \SoapClient
                 );
             } else {
                 throw new Exception(
-                    'Non SWA SoapClient cannot handle SOAP action '.$action.' with attachments: '.implode(', ', $soapAttachmentList->getSoapAttachmentIds())
+                    'Non SWA SoapClient cannot handle SOAP action ' . $action . ' with attachments: ' . implode(', ', $soapAttachmentList->getSoapAttachmentIds())
                 );
             }
         }
@@ -165,11 +163,11 @@ class SoapClient extends \SoapClient
     /**
      * Perform HTTP request with cURL.
      *
-     * @param SoapRequest $soapRequest SoapRequest object
+     * @param AbstractSoapRequest $soapRequest SoapRequest object
      * @return SoapResponse
      * @throws SoapFault
      */
-    private function performHttpSoapRequest(SoapRequest $soapRequest)
+    private function performHttpSoapRequest(AbstractSoapRequest $soapRequest)
     {
         $curlResponse = $this->curl->executeCurlWithCachedSession(
             $soapRequest->getLocation(),
@@ -190,7 +188,6 @@ class SoapClient extends \SoapClient
                 $soapResponseTracingData
             );
             if ($this->soapOptions->hasAttachments()) {
-
                 return SoapKernel::filterResponse(
                     $soapResponse,
                     $this->getAttachmentFilters(),
@@ -199,10 +196,8 @@ class SoapClient extends \SoapClient
             }
 
             return $soapResponse;
-
         }
         if ($curlResponse->curlStatusFailed()) {
-
             if ($curlResponse->getHttpResponseStatusCode() >= 500) {
                 $soapFault = SoapFaultParser::parseSoapFault(
                     $curlResponse->getResponseBody()
@@ -221,7 +216,7 @@ class SoapClient extends \SoapClient
             }
 
             return $this->throwSoapFaultByTracing(
-                SoapFaultEnum::SOAP_FAULT_HTTP.'-'.$curlResponse->getHttpResponseStatusCode(),
+                SoapFaultEnum::SOAP_FAULT_HTTP . '-' . $curlResponse->getHttpResponseStatusCode(),
                 $curlResponse->getCurlErrorMessage(),
                 $soapResponseTracingData
             );
@@ -242,7 +237,7 @@ class SoapClient extends \SoapClient
      *
      * @return string
      */
-    private function loadWsdl(Curl $curl, $wsdlPath, $wsdlCacheType, $resolveRemoteIncludes = true)
+    private function loadWsdl(Curl $curl, $wsdlPath, $wsdlCacheType, $resolveRemoteIncludes =true)
     {
         $wsdlDownloader = new WsdlDownloader();
         try {
@@ -250,17 +245,16 @@ class SoapClient extends \SoapClient
         } catch (Exception $e) {
             throw new SoapFault(
                 SoapFaultEnum::SOAP_FAULT_WSDL,
-                'Unable to load WsdlPath ('.$wsdlPath.') with message: '.$e->getMessage().' in file: '.$e->getFile().' (line: '.$e->getLine().')'
+                'Unable to load WsdlPath (' . $wsdlPath . ') with message: ' . $e->getMessage() . ' in file: ' . $e->getFile() . ' (line: ' . $e->getLine() . ')'
             );
         }
 
         return $loadedWsdlFilePath;
     }
 
-    private function getHttpHeadersBySoapVersion(SoapRequest $soapRequest)
+    private function getHttpHeadersBySoapVersion(AbstractSoapRequest $soapRequest)
     {
         if ($soapRequest->getVersion() === SOAP_1_1) {
-
             return [
                 'Content-Type: ' . $soapRequest->getContentType(),
                 'SOAPAction: "' . $soapRequest->getAction() . '"',
@@ -278,20 +272,20 @@ class SoapClient extends \SoapClient
     {
         $filters = [];
         if ($this->soapOptions->getAttachmentType() !== SoapOptions::SOAP_ATTACHMENTS_TYPE_BASE64) {
-            $filters[] = new MimeFilter();
+            $filters[] = new MimeFilterInterfaceInterface();
         }
         if ($this->soapOptions->getAttachmentType() === SoapOptions::SOAP_ATTACHMENTS_TYPE_MTOM) {
-            $filters[] = new XmlMimeFilter();
+            $filters[] = new XmlMimeFilterInterface();
         }
 
         return $filters;
     }
 
     private function returnSoapResponseByTracing(
-        SoapRequest $soapRequest,
+        AbstractSoapRequest $soapRequest,
         CurlResponse $curlResponse,
         SoapResponseTracingData $soapResponseTracingData,
-        array $soapAttachments = []
+        array $soapAttachments =[]
     ) {
         if ($this->soapClientOptions->getTrace() === true) {
             return SoapResponseFactory::createWithTracingData(
@@ -320,11 +314,10 @@ class SoapClient extends \SoapClient
     private function throwSoapFaultByTracing($soapFaultCode, $soapFaultMessage, SoapResponseTracingData $soapResponseTracingData)
     {
         if ($this->soapClientOptions->getTrace() === true) {
-
             throw new SoapFaultWithTracingData(
+                $soapResponseTracingData,
                 $soapFaultCode,
                 $soapFaultMessage,
-                $soapResponseTracingData
             );
         }
 
